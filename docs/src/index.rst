@@ -25,34 +25,6 @@ system capable of configuring and executing workflows.
   running/running_standalone
   running/running_integration
 
-.. toctree::
-  :maxdepth: 1
-  :caption: LMC
-
-  lmc/sdp_master
-  lmc/sdp_subarray
-  lmc/building_and_testing
-
-.. toctree::
-  :maxdepth: 1
-  :caption: Configuration
-
-  configuration/config_db
-  configuration/config_schema
-  configuration/config_api
-
-.. toctree::
-  :maxdepth: 1
-  :caption: Services
-
-  services/processing_controller
-  services/helm_deployer
-
-.. toctree::
-  :maxdepth: 1
-  :caption: Workflows
-
-  workflows/workflows
 
 Indices and tables
 ------------------
