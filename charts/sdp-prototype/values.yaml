@@ -1,0 +1,71 @@
+
+# Feature toggles
+feature:
+  # Tango devices connect to configuration DB?
+  config-db: 1
+
+
+# Helm deployment controller
+helm_deploy:
+  image: nexus.engageska-portugal.pt/sdp-prototype/helm-deploy
+  version: 0.6.0
+  imagePullPolicy: IfNotPresent
+  replicas: 1
+  namespace: sdp
+  chart_repo:
+    url: https://gitlab.com/ska-telescope/sdp-prototype/-/raw/master/src/helm_deploy/chart-repo/
+    refresh: 300
+
+# Configuration database
+etcd:
+  repository: quay.io/coreos/etcd
+  version: "3.3"
+  replicas: 1
+
+# ds config
+dsconfig:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-dsconfig
+    tag: latest
+    pullPolicy: IfNotPresent
+
+# Processing controller
+processing_controller:
+  image: nexus.engageska-portugal.pt/sdp-prototype/processing-controller
+  version: 0.6.0
+  replicas: 1
+  resources: {}
+  imagePullPolicy: IfNotPresent
+  workflows:
+    url: https://gitlab.com/ska-telescope/sdp-prototype/-/raw/master/src/workflows/workflows.json
+    refresh: 300
+
+# LMC (Tango devices)
+lmc:
+  enabled: true
+  image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-lmc
+  version: 0.13.0
+  imagePullPolicy: IfNotPresent
+
+# Console
+console:
+  image: nexus.engageska-portugal.pt/sdp-prototype/console
+  version: 0.2.0
+  imagePullPolicy: IfNotPresent
+  replicas: 1
+  enabled: true
+
+# Parameters for sub-chart
+tango-base:
+  tangotest:
+    enabled: false
+  itango:
+    enabled: true
+  jive:
+    enabled: false
+  logviewer:
+    enabled: false
+
+nameOverride: ""
+fullnameOverride: ""
