@@ -28,6 +28,6 @@ spec:
         - name: SDP_CONFIG_HOST
           value: {{ include "sdp-prototype.etcd-host" . }}
         - name: SDP_HELM_NAMESPACE
-          value: {{ quote .Values.helm_deploy.namespace }}
+          value: {{ quote .Values.helmdeploy.namespace }}
       serviceAccountName: {{ include "sdp-prototype.fullname" . }}-helm
 {{- end }}

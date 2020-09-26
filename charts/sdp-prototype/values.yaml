@@ -6,14 +6,14 @@ feature:
 
 
 # Helm deployment controller
-helm_deploy:
-  image: nexus.engageska-portugal.pt/sdp-prototype/helm-deploy
-  version: 0.6.0
+helmdeploy:
+  image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-helmdeploy
+  version: 0.7.0
   imagePullPolicy: IfNotPresent
   replicas: 1
   namespace: sdp
   chart_repo:
-    url: https://gitlab.com/ska-telescope/sdp-prototype/-/raw/master/src/helm_deploy/chart-repo/
+    url: https://gitlab.com/ska-telescope/sdp-helmdeploy-charts/-/raw/master/chart-repo/
     refresh: 300
 
 # Configuration database
@@ -31,26 +31,26 @@ dsconfig:
     pullPolicy: IfNotPresent
 
 # Processing controller
-processing_controller:
-  image: nexus.engageska-portugal.pt/sdp-prototype/processing-controller
-  version: 0.6.0
+proccontrol:
+  image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-proccontrol
+  version: 0.7.0
   replicas: 1
   resources: {}
   imagePullPolicy: IfNotPresent
   workflows:
-    url: https://gitlab.com/ska-telescope/sdp-prototype/-/raw/master/src/workflows/workflows.json
+    url: https://gitlab.com/ska-telescope/sdp-workflows-procfunc/-/raw/master/workflows.json
     refresh: 300
 
 # LMC (Tango devices)
 lmc:
   enabled: true
   image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-lmc
-  version: 0.13.0
+  version: 0.14.0
   imagePullPolicy: IfNotPresent
 
 # Console
 console:
-  image: nexus.engageska-portugal.pt/sdp-prototype/console
+  image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-console
   version: 0.2.0
   imagePullPolicy: IfNotPresent
   replicas: 1
