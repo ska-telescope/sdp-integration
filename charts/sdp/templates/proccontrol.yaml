@@ -1,0 +1,68 @@
+---
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "sdp.name" . }}-proccontrol
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp.labels" . | indent 4 }}
+    component: {{ .Values.proccontrol.component }}
+    subsystem: {{ .Values.proccontrol.subsystem }}
+    function: {{ .Values.proccontrol.function }}
+    domain: {{ .Values.proccontrol.domain }}
+    intent: production
+spec:
+  clusterIP: None
+  ports:
+  - name: dummy # Actually, no port is needed.
+    port: 1234
+    targetPort: 1234
+  selector:
+    component: {{ .Values.proccontrol.component }}
+    subsystem: {{ .Values.proccontrol.subsystem }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "sdp.name" . }}-proccontrol
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp.labels" . | indent 4 }}
+    component: {{ .Values.proccontrol.component }}
+    subsystem: {{ .Values.proccontrol.subsystem }}
+    function: {{ .Values.proccontrol.function }}
+    domain: {{ .Values.proccontrol.domain }}
+    intent: production
+spec:
+  replicas: {{ .Values.proccontrol.replicas }}
+  selector:
+    matchLabels:
+      component: {{ .Values.proccontrol.component }}
+      subsystem: {{ .Values.proccontrol.subsystem }}
+  serviceName: {{ template "sdp.name" . }}-proccontrol
+  template:
+    metadata:
+      labels:
+        {{- include "sdp.labels" . | indent 8 }}
+        component: {{ .Values.proccontrol.component }}
+        subsystem: {{ .Values.proccontrol.subsystem }}
+        function: {{ .Values.proccontrol.function }}
+        domain: {{ .Values.proccontrol.domain }}
+        intent: production
+    spec:
+      initContainers:
+      {{- include "sdp.wait-for-etcd" . | nindent 6 }}
+      containers:
+      - image: {{ .Values.proccontrol.image }}:{{ .Values.proccontrol.version }}
+        imagePullPolicy: {{ .Values.proccontrol.imagePullPolicy }}
+        name: proccontrol
+        env:
+        - name: SDP_CONFIG_HOST
+          value: {{ include "sdp.etcd-host" . }}
+        - name: SDP_HELM_NAMESPACE
+          value: {{ quote .Values.helmdeploy.namespace }}
+        - name: SDP_WORKFLOWS_URL
+          value: {{ quote .Values.proccontrol.workflows.url }}
+        - name: SDP_WORKFLOWS_REFRESH
+          value: {{ quote .Values.proccontrol.workflows.refresh }}

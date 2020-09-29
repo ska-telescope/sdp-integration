@@ -1,0 +1,28 @@
+{
+  "servers": {
+    "SDPMaster": {
+      "1": {
+        "SDPMaster": {
+          "mid_sdp/elt/master": {}
+        }
+      }
+    },
+    "SDPSubarray": {
+      "1": {
+        "SDPSubarray": {
+          "mid_sdp/elt/subarray_1": {}
+        }
+      },
+      "2": {
+        "SDPSubarray": {
+          "mid_sdp/elt/subarray_2": {}
+        }
+      },
+      "3": {
+        "SDPSubarray": {
+          "mid_sdp/elt/subarray_3": {}
+        }
+      }
+    }
+  }
+}

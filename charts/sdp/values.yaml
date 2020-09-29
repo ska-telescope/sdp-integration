@@ -1,0 +1,130 @@
+system: sdp
+telescope: SKA-mid
+
+# Configuration database
+etcd:
+  component: config-database
+  subsystem: execution-control
+  function: sdp-configuration
+  domain: science-data-processing
+  image: quay.io/coreos/etcd
+  version: "3.3"
+  replicas: 1
+
+# Console
+console:
+  component: maintenance-interface
+  subsystem: execution-control
+  function: maintenance-control
+  domain: science-data-processing
+  image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-console
+  version: 0.2.0
+  imagePullPolicy: IfNotPresent
+  replicas: 1
+  enabled: true
+
+# Processing controller
+proccontrol:
+  component: processing-controller
+  subsystem: execution-control
+  function: PB-execution
+  domain: science-data-processing
+  image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-proccontrol
+  version: 0.7.0
+  imagePullPolicy: IfNotPresent
+  replicas: 1
+  workflows:
+    url: https://gitlab.com/ska-telescope/sdp-workflows-procfunc/-/raw/master/workflows.json
+    refresh: 300
+
+# Helm deployment controller
+helmdeploy:
+  component: helm-deploy
+  subsystem: execution-control
+  function: runtime-deployment
+  domain: science-data-processing
+  image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-helmdeploy
+  version: 0.7.0
+  imagePullPolicy: IfNotPresent
+  replicas: 1
+  namespace: sdp
+  createNamespace: true
+  chart_repo:
+    url: https://gitlab.com/ska-telescope/sdp-helmdeploy-charts/-/raw/master/chart-repo/
+    refresh: 300
+
+# LMC (Tango devices)
+lmc:
+  component: subarray-controller
+  subsystem: execution-control
+  function: sdp-monitoring-and-control
+  domain: subarray
+  image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-lmc
+  version: 0.14.0
+  imagePullPolicy: IfNotPresent
+  enabled: true
+
+deviceServers:
+  - name: master
+    subsystem: execution-control
+    function: sdp-central-control
+    domain: sdp-monitoring
+    image: "{{ .Values.lmc.image }}:{{ .Values.lmc.version }}"
+    imagePullPolicy: "{{ .Values.lmc.imagePullPolicy }}"
+    command: ["SDPMaster"]
+    args: ["1", "-v4"]
+  - name: subarray-1
+    subsystem: execution-control
+    function: sdp-subarray-observation
+    domain: subarray
+    image: "{{ .Values.lmc.image }}:{{ .Values.lmc.version }}"
+    imagePullPolicy: "{{ .Values.lmc.imagePullPolicy }}"
+    command: ["SDPSubarray"]
+    args: ["1", "-v4"]
+  - name: subarray-2
+    subsystem: execution-control
+    function: sdp-subarray-observation
+    domain: subarray
+    image: "{{ .Values.lmc.image }}:{{ .Values.lmc.version }}"
+    imagePullPolicy: "{{ .Values.lmc.imagePullPolicy }}"
+    command: ["SDPSubarray"]
+    args: ["2", "-v4"]
+  - name: subarray-3
+    subsystem: execution-control
+    function: sdp-subarray-observation
+    domain: subarray
+    image: "{{ .Values.lmc.image }}:{{ .Values.lmc.version }}"
+    imagePullPolicy: "{{ .Values.lmc.imagePullPolicy }}"
+    command: ["SDPSubarray"]
+    args: ["3", "-v4"]
+
+# Tango dsconfig
+dsconfig:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-dsconfig
+    tag: 1.2.5.1
+    pullPolicy: IfNotPresent
+
+# Enable tango-base subchart
+enableTangoBase: true
+
+# Parameters for tango-base subchart
+tango-base:
+  tangotest:
+    enabled: false
+  itango:
+    enabled: true
+  jive:
+    enabled: false
+  logviewer:
+    enabled: false
+
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []

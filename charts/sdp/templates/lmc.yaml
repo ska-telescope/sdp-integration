@@ -1,0 +1,146 @@
+{{ if .Values.lmc.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ template "sdp.name" . }}-lmc-configuration"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp.labels" . | indent 4 }}
+    component: configurator
+    subsystem: enabling-system
+    function: deployment
+    intent: enabling
+    domain: self-configuration
+data:
+  sdp-devices.json:
+{{ (tpl (.Files.Glob "data/sdp-devices.json").AsConfig . ) | indent 2 }}
+  sane-dsconfig.sh:
+{{ (tpl (.Files.Glob "data/sane-dsconfig.sh").AsConfig . ) | indent 2 }}
+---
+# run once Job for loading Device Server config
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "sdp.name" . }}-lmc-configurator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp.labels" . | indent 4 }}
+    component: configurator
+    subsystem: enabling-system
+    function: deployment
+    intent: enabling
+    domain: self-configuration
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+      - name: dsconfig
+        image: "{{ .Values.dsconfig.image.registry }}/{{ .Values.dsconfig.image.image }}:{{ .Values.dsconfig.image.tag }}"
+        imagePullPolicy: {{ .Values.dsconfig.image.pullPolicy }}
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
+          - --timeout=180
+          - --strict
+          - --
+          - /bin/bash
+          - data/sane-dsconfig.sh -w -a -u data/sdp-devices.json
+        env:
+        - name: TANGO_HOST
+          value: {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
+        volumeMounts:
+          - name: configuration
+            mountPath: data
+            readOnly: true
+      volumes:
+        - name: configuration
+          configMap:
+            name: "{{ template "sdp.name" . }}-lmc-configuration"
+      restartPolicy: Never
+{{- $global := . }}
+{{- range $deviceserver := .Values.deviceServers }}
+---
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "sdp.name" $global }}-lmc-{{ $deviceserver.name }}
+  namespace: {{ $global.Release.Namespace }}
+  labels:
+    {{- include "sdp.labels" $global | indent 4 }}
+    component: {{ $deviceserver.name }}
+    subsystem: {{ $deviceserver.subsystem }}
+    function: {{ $deviceserver.function }}
+    domain: {{ $deviceserver.domain }}
+    intent: production
+spec:
+  clusterIP: None
+  ports:
+  - name: dummy # Actually, no port is needed.
+    port: 1234
+    targetPort: 1234
+  selector:
+    component: {{ $deviceserver.name }}
+    subsystem: {{ $deviceserver.subsystem }}
+---
+# Single Pod separate statefulset per Device Server
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "sdp.name" $global }}-lmc-{{ $deviceserver.name }}
+  namespace: {{ $global.Release.Namespace }}
+  labels:
+    {{- include "sdp.labels" $global | indent 4 }}
+    component: {{ $deviceserver.name }}
+    subsystem: {{ $deviceserver.subsystem }}
+    function: {{ $deviceserver.function }}
+    domain: {{ $deviceserver.domain }}
+    intent: production
+spec:
+  selector:
+    matchLabels:
+      component: {{ $deviceserver.name }}
+      subsystem: {{ $deviceserver.subsystem }}
+  serviceName: {{ template "sdp.name" $global }}-lmc-{{ $deviceserver.name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        {{- include "sdp.labels" $global | indent 8 }}
+        component: {{ $deviceserver.name }}
+        subsystem: {{ $deviceserver.subsystem }}
+        function: {{ $deviceserver.function }}
+        domain: {{ $deviceserver.domain }}
+        intent: production
+    spec:
+      initContainers:
+      {{- include "sdp.wait-for-etcd" $global | nindent 6 }}
+      containers:
+      - name: {{ $deviceserver.name }}
+        image: "{{ tpl $deviceserver.image $global }}"
+        imagePullPolicy: "{{ tpl $deviceserver.imagePullPolicy $global }}"
+        command: {{ toJson $deviceserver.command }}
+        args: {{ toJson $deviceserver.args}}
+        env:
+        - name: TANGO_HOST
+          value: {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ $global.Release.Name }}:10000 {{- end }}
+        - name: SDP_CONFIG_HOST
+          value: {{ include "sdp.etcd-host" $global }}
+        resources:
+{{ toYaml $global.Values.resources | indent 10 }}
+{{- with $global.Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }} # end of nodeSelector
+{{- with $global.Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }} # end of affinity
+{{- with $global.Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }} # end of tolerations
+{{- end }} # end of range
+{{- end }}
