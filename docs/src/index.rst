@@ -1,29 +1,29 @@
-SDP Prototype
-=============
+SDP Integration
+===============
 
-This repository contains a set of packages for deploying a minimal SDP
-system capable of configuring and executing workflows.
+The sdp-integration repository integrates the components of the SKA Science
+Data Processor (SDP). It contains the Helm chart to deploy the SDP as a
+subsytem of the SKA, or stand-alone for testing.
+
+This documentation also gives a overview of the design of the SDP. It describes
+the components that make up the system, and the software modules from which
+they are built.
 
 .. toctree::
   :maxdepth: 1
+  :caption: SDP Design
 
-  getting_started
-
-.. toctree::
-  :maxdepth: 1
-  :caption: SDP Prototype Design
-
-  design/design
+  design/overview
   design/components
-  design/module
+  design/modules
 
 .. toctree::
   :maxdepth: 1
-  :caption: Running the SDP Prototype
+  :caption: Running the SDP
 
-  running/setting_up_local_dev_env
-  running/running_standalone
-  running/running_integration
+  running/requirements
+  running/standalone
+  running/integration
 
 
 Indices and tables

@@ -1,11 +1,15 @@
+.. _design_components:
+
 Components
 ==========
 
+.. figure:: ../images/sdp_components.svg
+  :align: center
 
-.. figure:: ../images/sdp_system_cc.svg
-   :align: center
+  SDP components and the connections between them.
 
-   Component and connector diagram of the prototype implementation.
+The diagram shows the components of the SDP system and the connections between
+them. The components, grouped by function, are as follows.
 
 **Execution Control**:
 
