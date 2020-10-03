@@ -1,9 +1,6 @@
+# Running the SDP stand-alone
 
-Running the SDP Prototype stand-alone
-=====================================
-
-Installing the etcd operator
-----------------------------
+## Installing the etcd operator
 
 The SDP configuration database is implemented on top of [etcd](https://etcd.io),
 a strongly consistent, distributed key-value store that provides a reliable way
@@ -20,7 +17,7 @@ If you have a fresh install of Helm, you need to add the `stable` repository:
 $ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
 ```
 
-The `sdp-prototype` charts directory contains a file called
+The `sdp-integration` charts directory contains a file called
 `etcd-operator.yaml` with settings for the chart. This turns off parts which
 are not used (the backup and restore operators).
 
@@ -47,8 +44,7 @@ in 'Running' state (yes, Helm is exceedingly redundant with its names). If not
 wait a bit, if you try to go to the next step before this has completed there is
 a  chance it will fail.
 
-Deploying the SDP
------------------
+## Deploying the SDP
 
 At this point you should be able to deploy the SDP. Install the `sdp-prototype`
 chart with the release name `test`:
@@ -73,10 +69,10 @@ $ kubectl logs test-sdp-prototype-lmc-[...] sdp-subarray-1
 1|2020-08-06T15:17:41.369Z|INFO|MainThread|init_device|subarray.py#110|SDPSubarray|Initialising SDP Subarray: mid_sdp/elt/subarray_1
 ...
 1|2020-08-06T15:17:41.377Z|INFO|MainThread|init_device|subarray.py#140|SDPSubarray|SDP Subarray initialised: mid_sdp/elt/subarray_1
-$ kubectl logs test-sdp-prototype-processing-controller-[...]
+$ kubectl logs test-sdp-prototype-proccontrol-[...]
 ...
 1|2020-08-06T15:14:30.068Z|DEBUG|MainThread|main|processing_controller.py#192||Waiting...
-$ kubectl logs test-sdp-prototype-helm-deploy-[...]
+$ kubectl logs test-sdp-prototype-helmdeploy-[...]
 ...
 1|2020-08-06T15:14:31.662Z|INFO|MainThread|main|helm_deploy.py#146||Found 0 existing deployments.
 ```
@@ -84,8 +80,7 @@ $ kubectl logs test-sdp-prototype-helm-deploy-[...]
 If it looks like this, there is a good chance everything has been deployed
 correctly.
 
-Testing it out
---------------
+## Testing it out
 
 ### Connecting to the configuration database
 
@@ -213,8 +208,7 @@ If you re-run the commands from the last section you will notice that
 this correctly causes all changes to the cluster configuration to be
 undone as well.
 
-Accessing Tango
----------------
+## Accessing the Tango interface
 
 By default the sdp-prototype chart installs the iTango shell pod from the
 tango-base chart. You can access it as follows:
@@ -334,8 +328,7 @@ In [21]: d.state()
 Out[21]: tango._tango.DevState.OFF
 ```
 
-Removing the SDP
-----------------
+## Removing the SDP
 
 To remove the SDP deployment from the cluster, do:
 
@@ -349,8 +342,7 @@ and to remove the etcd operator, do:
 $ helm uninstall etcd
 ```
 
-Troubleshooting
----------------
+## Troubleshooting
 
 ### etcd doesn't start (DNS problems)
 

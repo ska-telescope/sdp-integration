@@ -4,9 +4,9 @@ Running the SDP in the integration environment
 ==============================================
 
 The SDP is being integrated with the other telescope subsystems as part of the
-so-called *Minimum Viable Product* (MVP). The integration is done in the `SKA
-MVP Prototype Integration (SKAMPI) repository
-<https://gitlab.com/ska-telescope/skampi/>`_.
+SKA evolutionary prototype, also known as the *Minimum Viable Product* (MVP).
+The integration is done in the `SKA MVP Prototype Integration (SKAMPI)
+repository <https://gitlab.com/ska-telescope/skampi/>`_.
 
 Instructions for installing and running the MVP can be found in the `SKAMPI
 documentation
@@ -15,10 +15,6 @@ documentation
 To then deploy an SDP workflow without using the Tango interface, follow the
 instructions in :ref:`running_standalone`. However, you will must specify the
 namespace in which the SDP is running.
-
-..
-    `standalone SDP documentation
-    <https://developer.skatelescope.org/projects/sdp-prototype/en/latest/running/running_standalone.html#connecting-to-the-configuration-database>`_.
 
 .. code-block::
 
