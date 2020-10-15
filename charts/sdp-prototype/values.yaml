@@ -8,7 +8,7 @@ feature:
 # Helm deployment controller
 helmdeploy:
   image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-helmdeploy
-  version: 0.7.0
+  version: 0.7.1
   imagePullPolicy: IfNotPresent
   replicas: 1
   namespace: sdp
@@ -19,7 +19,7 @@ helmdeploy:
 # Configuration database
 etcd:
   repository: quay.io/coreos/etcd
-  version: "3.3"
+  version: 3.3.25
   replicas: 1
 
 # ds config
@@ -33,7 +33,7 @@ dsconfig:
 # Processing controller
 proccontrol:
   image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-proccontrol
-  version: 0.7.0
+  version: 0.7.1
   replicas: 1
   resources: {}
   imagePullPolicy: IfNotPresent
@@ -45,7 +45,7 @@ proccontrol:
 lmc:
   enabled: true
   image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-lmc
-  version: 0.14.0
+  version: 0.14.1
   imagePullPolicy: IfNotPresent
 
 # Console

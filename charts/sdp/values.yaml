@@ -8,7 +8,7 @@ etcd:
   function: sdp-configuration
   domain: science-data-processing
   image: quay.io/coreos/etcd
-  version: "3.3"
+  version: 3.3.25
   replicas: 1
 
 # Console
@@ -30,7 +30,7 @@ proccontrol:
   function: PB-execution
   domain: science-data-processing
   image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-proccontrol
-  version: 0.7.0
+  version: 0.7.1
   imagePullPolicy: IfNotPresent
   replicas: 1
   workflows:
@@ -44,7 +44,7 @@ helmdeploy:
   function: runtime-deployment
   domain: science-data-processing
   image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-helmdeploy
-  version: 0.7.0
+  version: 0.7.1
   imagePullPolicy: IfNotPresent
   replicas: 1
   namespace: sdp
@@ -60,7 +60,7 @@ lmc:
   function: sdp-monitoring-and-control
   domain: subarray
   image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-lmc
-  version: 0.14.0
+  version: 0.14.1
   imagePullPolicy: IfNotPresent
   enabled: true
 
