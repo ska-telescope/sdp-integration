@@ -24,25 +24,3 @@ spec:
       intent: production
     antiAffinity: false
     nodeSelector: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "sdp.name" . }}-etcd-nodeport
-  namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "sdp.labels" . | indent 4 }}
-    component: {{ .Values.etcd.component }}
-    subsystem: {{ .Values.etcd.subsystem }}
-    function: {{ .Values.etcd.function }}
-    domain: {{ .Values.etcd.domain }}
-    intent: production
-spec:
-  type: NodePort
-  selector:
-    etcd_cluster: {{ include "sdp.name" . }}-etcd
-    app: etcd
-  ports:
-  - protocol: TCP
-    port: 2379
-    targetPort: 2379
