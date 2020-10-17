@@ -66,3 +66,4 @@ spec:
           value: {{ quote .Values.proccontrol.workflows.url }}
         - name: SDP_WORKFLOWS_REFRESH
           value: {{ quote .Values.proccontrol.workflows.refresh }}
+        {{- include "sdp.http-proxy" . | nindent 8 }}

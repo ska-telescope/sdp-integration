@@ -32,6 +32,7 @@ spec:
           value: {{ quote .Values.proccontrol.workflows.url }}
         - name: SDP_WORKFLOWS_REFRESH
           value: {{ quote .Values.proccontrol.workflows.refresh }}
+        {{- include "sdp-prototype.http-proxy" . | nindent 8 }}
         {{- with .Values.proccontrol.resources }}
         resources:
           {{- toYaml . | nindent 10 }}

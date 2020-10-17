@@ -58,3 +58,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
   - name: ETCDCTL_API
     value: "3"
 {{- end -}}
+
+{{/* Environment variables for HTTP proxy settings */}}
+{{- define "sdp-prototype.http-proxy" -}}
+{{- if .Values.proxy -}}
+{{- $noproxy := list (include "sdp-prototype.etcd-host" .) "localhost" "127.0.0.1" "10.96.0.0/12" "172.17.0.1/16" -}}
+{{- $noproxy := concat $noproxy .Values.proxy.noproxy -}}
+- name: http_proxy
+  value: {{ .Values.proxy.server | quote }}
+- name: https_proxy
+  value: {{ .Values.proxy.server | quote }}
+- name: no_proxy
+  value: {{ join "," $noproxy | quote }}
+{{- end -}}
+{{- end -}}

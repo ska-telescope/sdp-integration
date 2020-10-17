@@ -76,6 +76,7 @@ spec:
           value: "{{ .Values.helmdeploy.chart_repo.url }}"
         - name: SDP_CHART_REPO_REFRESH
           value: "{{ .Values.helmdeploy.chart_repo.refresh }}"
+        {{- include "sdp.http-proxy" . | nindent 8 }}
       serviceAccountName: {{ include "sdp.name" . }}-helm
 ---
 apiVersion: v1
