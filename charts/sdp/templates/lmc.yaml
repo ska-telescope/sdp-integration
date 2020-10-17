@@ -59,17 +59,16 @@ spec:
           configMap:
             name: "{{ template "sdp.name" . }}-lmc-configuration"
       restartPolicy: Never
-{{- $global := . }}
 {{- range $deviceserver := .Values.deviceServers }}
 ---
 # giving a dummy Service entry ensures that the single pod is DNS addressable
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "sdp.name" $global }}-lmc-{{ $deviceserver.name }}
-  namespace: {{ $global.Release.Namespace }}
+  name: {{ template "sdp.name" $ }}-lmc-{{ $deviceserver.name }}
+  namespace: {{ $.Release.Namespace }}
   labels:
-    {{- include "sdp.labels" $global | indent 4 }}
+    {{- include "sdp.labels" $ | indent 4 }}
     component: {{ $deviceserver.name }}
     subsystem: {{ $deviceserver.subsystem }}
     function: {{ $deviceserver.function }}
@@ -89,10 +88,10 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ template "sdp.name" $global }}-lmc-{{ $deviceserver.name }}
-  namespace: {{ $global.Release.Namespace }}
+  name: {{ template "sdp.name" $ }}-lmc-{{ $deviceserver.name }}
+  namespace: {{ $.Release.Namespace }}
   labels:
-    {{- include "sdp.labels" $global | indent 4 }}
+    {{- include "sdp.labels" $ | indent 4 }}
     component: {{ $deviceserver.name }}
     subsystem: {{ $deviceserver.subsystem }}
     function: {{ $deviceserver.function }}
@@ -103,12 +102,12 @@ spec:
     matchLabels:
       component: {{ $deviceserver.name }}
       subsystem: {{ $deviceserver.subsystem }}
-  serviceName: {{ template "sdp.name" $global }}-lmc-{{ $deviceserver.name }}
+  serviceName: {{ template "sdp.name" $ }}-lmc-{{ $deviceserver.name }}
   replicas: 1
   template:
     metadata:
       labels:
-        {{- include "sdp.labels" $global | indent 8 }}
+        {{- include "sdp.labels" $ | indent 8 }}
         component: {{ $deviceserver.name }}
         subsystem: {{ $deviceserver.subsystem }}
         function: {{ $deviceserver.function }}
@@ -116,29 +115,29 @@ spec:
         intent: production
     spec:
       initContainers:
-      {{- include "sdp.wait-for-etcd" $global | nindent 6 }}
+      {{- include "sdp.wait-for-etcd" $ | nindent 6 }}
       containers:
       - name: {{ $deviceserver.name }}
-        image: "{{ tpl $deviceserver.image $global }}"
-        imagePullPolicy: "{{ tpl $deviceserver.imagePullPolicy $global }}"
+        image: "{{ tpl $deviceserver.image $ }}"
+        imagePullPolicy: "{{ tpl $deviceserver.imagePullPolicy $ }}"
         command: {{ toJson $deviceserver.command }}
         args: {{ toJson $deviceserver.args}}
         env:
         - name: TANGO_HOST
-          value: {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ $global.Release.Name }}:10000 {{- end }}
+          value: {{ if $.Values.tangoDatabaseDS -}} {{ $.Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ $.Release.Name }}:10000 {{- end }}
         - name: SDP_CONFIG_HOST
-          value: {{ include "sdp.etcd-host" $global }}
+          value: {{ include "sdp.etcd-host" $ }}
         resources:
-{{ toYaml $global.Values.resources | indent 10 }}
-{{- with $global.Values.nodeSelector }}
+{{ toYaml $.Values.resources | indent 10 }}
+{{- with $.Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
 {{- end }} # end of nodeSelector
-{{- with $global.Values.affinity }}
+{{- with $.Values.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
 {{- end }} # end of affinity
-{{- with $global.Values.tolerations }}
+{{- with $.Values.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
 {{- end }} # end of tolerations
