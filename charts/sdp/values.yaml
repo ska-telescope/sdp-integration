@@ -48,7 +48,8 @@ helmdeploy:
   imagePullPolicy: IfNotPresent
   replicas: 1
   namespace: sdp
-  createNamespace: true
+  createNamespace: false
+  createClusterRole: false
   chart_repo:
     url: https://gitlab.com/ska-telescope/sdp-helmdeploy-charts/-/raw/master/chart-repo/
     refresh: 300

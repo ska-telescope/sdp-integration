@@ -113,26 +113,6 @@ roleRef:
   name: {{ include "sdp.name" . }}-helm
   apiGroup: rbac.authorization.k8s.io
 ---
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: {{ include "sdp.name" . }}-helm-global
-  labels:
-    {{- include "sdp.labels" . | indent 4 }}
-    component: {{ .Values.helmdeploy.component }}
-    subsystem: {{ .Values.helmdeploy.subsystem }}
-    function: {{ .Values.helmdeploy.function }}
-    domain: {{ .Values.helmdeploy.domain }}
-    intent: production
-subjects:
-- kind: ServiceAccount
-  name: {{ include "sdp.name" . }}-helm
-  namespace: {{ .Release.Namespace }}
-roleRef:
-  kind: ClusterRole
-  name: {{ include "sdp.name" . }}-helm-global
-  apiGroup: rbac.authorization.k8s.io
----
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -153,6 +133,27 @@ rules:
   resources: ["deployments", "jobs", "pods", "configmaps",
               "persistentvolumeclaims", "services", "secrets"]
   verbs: ["list", "get", "watch", "create", "update", "patch", "delete"]
+{{- if .Values.helmdeploy.createClusterRole }}
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "sdp.name" . }}-helm-global
+  labels:
+    {{- include "sdp.labels" . | indent 4 }}
+    component: {{ .Values.helmdeploy.component }}
+    subsystem: {{ .Values.helmdeploy.subsystem }}
+    function: {{ .Values.helmdeploy.function }}
+    domain: {{ .Values.helmdeploy.domain }}
+    intent: production
+subjects:
+- kind: ServiceAccount
+  name: {{ include "sdp.name" . }}-helm
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "sdp.name" . }}-helm-global
+  apiGroup: rbac.authorization.k8s.io
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
@@ -169,3 +170,4 @@ rules:
 - apiGroups: [""]
   resources: ["persistentvolumes"]
   verbs: ["list", "get", "watch", "create", "update", "patch", "delete"]
+{{- end }}
