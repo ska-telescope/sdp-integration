@@ -15,6 +15,7 @@ helm_deploy:
     ref: master
     path: src/helm_deploy/charts
     refresh: 300
+  createClusterRole: false
 
 # Configuration database
 etcd:
