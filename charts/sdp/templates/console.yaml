@@ -1,5 +1,5 @@
 {{- if .Values.console.enabled }}
-# giving a dummy Service entry ensures that the single pod is DNS addressable
+# Dummy Service to ensure Pod is DNS addressable
 apiVersion: v1
 kind: Service
 metadata:
@@ -15,7 +15,7 @@ metadata:
 spec:
   clusterIP: None
   ports:
-  - name: dummy # Actually, no port is needed.
+  - name: dummy
     port: 1234
     targetPort: 1234
   selector:
