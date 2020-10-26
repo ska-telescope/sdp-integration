@@ -1,4 +1,6 @@
-{{ if .Values.lmc.enabled }}
+{{- if .Values.lmc.enabled }}
+{{- $tangohost := default (printf "databaseds-tango-base-%s" .Release.Name) .Values.tangoDatabaseDS }}
+{{- $tangohost := printf "%s:10000" $tangohost }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -13,12 +15,10 @@ metadata:
     intent: enabling
     domain: self-configuration
 data:
-  sdp-devices.json:
 {{ (tpl (.Files.Glob "data/sdp-devices.json").AsConfig . ) | indent 2 }}
-  sane-dsconfig.sh:
 {{ (tpl (.Files.Glob "data/sane-dsconfig.sh").AsConfig . ) | indent 2 }}
 ---
-# run once Job for loading Device Server config
+# Job to apply device server configuration to Tango database
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -41,7 +41,7 @@ spec:
         imagePullPolicy: {{ .Values.dsconfig.image.pullPolicy }}
         command:
           - /usr/local/bin/wait-for-it.sh
-          - {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
+          - {{ $tangohost }}
           - --timeout=180
           - --strict
           - --
@@ -49,7 +49,7 @@ spec:
           - data/sane-dsconfig.sh -w -a -u data/sdp-devices.json
         env:
         - name: TANGO_HOST
-          value: {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
+          value: {{ $tangohost }}
         volumeMounts:
           - name: configuration
             mountPath: data
@@ -59,9 +59,9 @@ spec:
           configMap:
             name: "{{ template "sdp.name" . }}-lmc-configuration"
       restartPolicy: Never
-{{- range $deviceserver := .Values.deviceServers }}
+{{- range $deviceserver := .Values.lmc.deviceServers }}
 ---
-# giving a dummy Service entry ensures that the single pod is DNS addressable
+# Dummy Service to ensure Pod is DNS addressable
 apiVersion: v1
 kind: Service
 metadata:
@@ -84,7 +84,7 @@ spec:
     component: {{ $deviceserver.name }}
     subsystem: {{ $deviceserver.subsystem }}
 ---
-# Single Pod separate statefulset per Device Server
+# StatefulSet with single Pod
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -116,6 +116,19 @@ spec:
     spec:
       initContainers:
       {{- include "sdp.wait-for-etcd" $ | nindent 6 }}
+      - name: wait-for-device-config
+        image: "{{ $.Values.dsconfig.image.registry }}/{{ $.Values.dsconfig.image.image }}:{{ $.Values.dsconfig.image.tag }}"
+        imagePullPolicy: {{ $.Values.dsconfig.image.pullPolicy }}
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --check-device
+          - {{ $deviceserver.device | toString }}
+        env:
+        - name: TANGO_HOST
+          value: {{ $tangohost }}
       containers:
       - name: {{ $deviceserver.name }}
         image: "{{ tpl $deviceserver.image $ }}"
@@ -123,10 +136,10 @@ spec:
         command: {{ toJson $deviceserver.command }}
         args: {{ toJson $deviceserver.args}}
         env:
-        - name: TANGO_HOST
-          value: {{ if $.Values.tangoDatabaseDS -}} {{ $.Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ $.Release.Name }}:10000 {{- end }}
         - name: SDP_CONFIG_HOST
           value: {{ include "sdp.etcd-host" $ }}
+        - name: TANGO_HOST
+          value: {{ $tangohost }}
         resources:
 {{ toYaml $.Values.resources | indent 10 }}
 {{- with $.Values.nodeSelector }}

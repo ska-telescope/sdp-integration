@@ -13,4 +13,4 @@ maintainers:
 dependencies:
 - name: tango-base
   version: 0.1.0
-  condition: enableTangoBase
+  condition: tango-base.enabled
