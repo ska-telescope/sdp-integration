@@ -3,9 +3,9 @@ telescope: SKA-mid
 
 # Configuration database
 etcd:
-  component: config-database
+  component: configuration-database
   subsystem: execution-control
-  function: sdp-configuration
+  function: configuration
   domain: science-data-processing
   image: quay.io/coreos/etcd
   version: 3.3.25
@@ -39,7 +39,7 @@ proccontrol:
 
 # Helm deployment controller
 helmdeploy:
-  component: helm-deploy
+  component: helm-deployer
   subsystem: execution-control
   function: runtime-deployment
   domain: science-data-processing
