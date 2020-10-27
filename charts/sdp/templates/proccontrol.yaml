@@ -54,9 +54,9 @@ spec:
       initContainers:
       {{- include "sdp.wait-for-etcd" . | nindent 6 }}
       containers:
-      - image: {{ .Values.proccontrol.image }}:{{ .Values.proccontrol.version }}
+      - name: proccontrol
+        image: {{ .Values.proccontrol.image }}:{{ .Values.proccontrol.version }}
         imagePullPolicy: {{ .Values.proccontrol.imagePullPolicy }}
-        name: proccontrol
         env:
         - name: SDP_CONFIG_HOST
           value: {{ include "sdp.etcd-host" . }}

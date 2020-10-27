@@ -64,18 +64,18 @@ spec:
       initContainers:
       {{- include "sdp.wait-for-etcd" . | nindent 6 }}
       containers:
-      - image: {{ .Values.helmdeploy.image }}:{{ .Values.helmdeploy.version }}
+      - name: helmdeploy
+        image: {{ .Values.helmdeploy.image }}:{{ .Values.helmdeploy.version }}
         imagePullPolicy: {{ .Values.helmdeploy.imagePullPolicy }}
-        name: helmdeploy
         env:
         - name: SDP_CONFIG_HOST
           value: {{ include "sdp.etcd-host" . }}
         - name: SDP_HELM_NAMESPACE
           value: {{ quote .Values.helmdeploy.namespace }}
         - name: SDP_CHART_REPO
-          value: "{{ .Values.helmdeploy.chart_repo.url }}"
+          value: {{ quote .Values.helmdeploy.chart_repo.url }}
         - name: SDP_CHART_REPO_REFRESH
-          value: "{{ .Values.helmdeploy.chart_repo.refresh }}"
+          value: {{ quote .Values.helmdeploy.chart_repo.refresh }}
         {{- include "sdp.http-proxy" . | nindent 8 }}
       serviceAccountName: {{ include "sdp.name" . }}-helm
 ---

@@ -1,6 +1,21 @@
 system: sdp
 telescope: SKA-mid
 
+# Global parameters
+global: {}
+
+# Tango dsconfig
+dsconfig:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-dsconfig
+    tag: 1.5.0
+    pullPolicy: IfNotPresent
+
+# Parameters for tango-base subchart
+tango-base:
+  enabled: true
+
 # Configuration database
 etcd:
   component: configuration-database
@@ -97,26 +112,6 @@ lmc:
     command: ["SDPSubarray"]
     args: ["3", "-v4"]
     device: mid_sdp/elt/subarray_3
-
-# Tango dsconfig
-dsconfig:
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-dsconfig
-    tag: 1.5.0
-    pullPolicy: IfNotPresent
-
-# Parameters for tango-base subchart
-tango-base:
-  enabled: true
-  tangotest:
-    enabled: false
-  itango:
-    enabled: true
-  jive:
-    enabled: false
-  logviewer:
-    enabled: false
 
 nameOverride: ""
 fullnameOverride: ""

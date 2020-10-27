@@ -1,5 +1,5 @@
 {{- if .Values.lmc.enabled }}
-{{- $tangohost := default (printf "databaseds-tango-base-%s" .Release.Name) .Values.tangoDatabaseDS }}
+{{- $tangohost := default (printf "databaseds-tango-base-%s" .Release.Name) .Values.global.tango_host }}
 {{- $tangohost := printf "%s:10000" $tangohost }}
 ---
 apiVersion: v1
@@ -131,8 +131,8 @@ spec:
           value: {{ $tangohost }}
       containers:
       - name: {{ $deviceserver.name }}
-        image: "{{ tpl $deviceserver.image $ }}"
-        imagePullPolicy: "{{ tpl $deviceserver.imagePullPolicy $ }}"
+        image: {{ tpl $deviceserver.image $ }}
+        imagePullPolicy: {{ tpl $deviceserver.imagePullPolicy $ }}
         command: {{ toJson $deviceserver.command }}
         args: {{ toJson $deviceserver.args}}
         env:

@@ -43,13 +43,15 @@ system: {{ .Values.system }}
 telescope: {{ .Values.telescope }}
 {{- end }}
 
-{{/* Init container to wait for configuration database availability */}}
+{{/* Configuration database host */}}
 {{- define "sdp.etcd-host" -}}
 {{ include "sdp.name" . }}-etcd-client.{{ .Release.Namespace }}.svc.cluster.local
 {{- end -}}
+
+{{/* Init container to wait for configuration database availability */}}
 {{- define "sdp.wait-for-etcd" -}}
-- image: {{ .Values.etcd.image }}:v{{ .Values.etcd.version }}
-  name: wait-for-etcd
+- name: wait-for-etcd
+  image: {{ .Values.etcd.image }}:v{{ .Values.etcd.version }}
   command: ["/bin/sh", "-c", "while ( ! etcdctl endpoint health ); do sleep 1; done"]
   env:
   - name: ETCDCTL_ENDPOINTS
