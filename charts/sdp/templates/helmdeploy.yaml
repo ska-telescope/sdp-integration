@@ -24,10 +24,6 @@ metadata:
     intent: production
 spec:
   clusterIP: None
-  ports:
-  - name: dummy
-    port: 1234
-    targetPort: 1234
   selector:
     component: {{ .Values.helmdeploy.component }}
     subsystem: {{ .Values.helmdeploy.subsystem }}

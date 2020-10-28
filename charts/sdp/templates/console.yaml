@@ -14,10 +14,6 @@ metadata:
     intent: production
 spec:
   clusterIP: None
-  ports:
-  - name: dummy
-    port: 1234
-    targetPort: 1234
   selector:
     component: {{ .Values.console.component }}
     subsystem: {{ .Values.console.subsystem }}

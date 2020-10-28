@@ -75,10 +75,6 @@ metadata:
     intent: production
 spec:
   clusterIP: None
-  ports:
-  - name: dummy
-    port: 1234
-    targetPort: 1234
   selector:
     component: {{ $deviceserver.name }}
     subsystem: {{ $deviceserver.subsystem }}
