@@ -1,6 +1,5 @@
 {{- if .Values.lmc.enabled }}
-{{- $tangohost := default (printf "databaseds-tango-base-%s" .Release.Name) .Values.global.tango_host }}
-{{- $tangohost := printf "%s:10000" $tangohost }}
+{{- $tangohost := default (printf "databaseds-tango-base-%s:10000" .Release.Name) .Values.global.tango_host }}
 ---
 apiVersion: v1
 kind: ConfigMap
