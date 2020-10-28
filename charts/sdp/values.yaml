@@ -24,7 +24,10 @@ etcd:
   domain: science-data-processing
   image: quay.io/coreos/etcd
   version: 3.3.25
+  imagePullPolicy: IfNotPresent
   replicas: 1
+  useOperator: false
+  maxTxnOps: 1024
 
 # Console
 console:

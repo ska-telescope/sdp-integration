@@ -1,3 +1,5 @@
+{{- if .Values.etcd.useOperator }}
+---
 apiVersion: "etcd.database.coreos.com/v1beta2"
 kind: "EtcdCluster"
 metadata:
@@ -24,3 +26,110 @@ spec:
       intent: production
     antiAffinity: false
     nodeSelector: {}
+{{- else }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sdp.name" . }}-etcd
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp.labels" . | indent 4 }}
+    component: {{ .Values.etcd.component }}
+    subsystem: {{ .Values.etcd.subsystem }}
+    function: {{ .Values.etcd.function }}
+    domain: {{ .Values.etcd.domain }}
+    intent: production
+spec:
+  clusterIP: None
+  ports:
+  - name: client
+    port: 2379
+    targetPort: 2379
+  - name: peer
+    port: 2380
+    targetPort: 2380
+  selector:
+    component: {{ .Values.etcd.component }}
+    subsystem: {{ .Values.etcd.subsystem }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sdp.name" . }}-etcd-client
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp.labels" . | indent 4 }}
+    component: {{ .Values.etcd.component }}
+    subsystem: {{ .Values.etcd.subsystem }}
+    function: {{ .Values.etcd.function }}
+    domain: {{ .Values.etcd.domain }}
+    intent: production
+spec:
+  ports:
+  - name: client
+    port: 2379
+    targetPort: 2379
+  selector:
+    component: {{ .Values.etcd.component }}
+    subsystem: {{ .Values.etcd.subsystem }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "sdp.name" . }}-etcd
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp.labels" . | indent 4 }}
+    component: {{ .Values.etcd.component }}
+    subsystem: {{ .Values.etcd.subsystem }}
+    function: {{ .Values.etcd.function }}
+    domain: {{ .Values.etcd.domain }}
+    intent: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: {{ .Values.etcd.component }}
+      subsystem: {{ .Values.etcd.subsystem }}
+  serviceName: {{ include "sdp.name" . }}-etcd
+  template:
+    metadata:
+      labels:
+        {{- include "sdp.labels" . | indent 8 }}
+        component: {{ .Values.etcd.component }}
+        subsystem: {{ .Values.etcd.subsystem }}
+        function: {{ .Values.etcd.function }}
+        domain: {{ .Values.etcd.domain }}
+        intent: production
+    spec:
+      containers:
+      - name: etcd
+        image: {{ .Values.etcd.image }}:v{{ .Values.etcd.version }}
+        imagePullPolicy: {{ .Values.etcd.imagePullPolicy }}
+        command:
+        - etcd
+        env:
+        - name: ETCD_NAME
+          value: {{ include "sdp.name" . }}-etcd
+        - name: ETCD_LISTEN_PEER_URLS
+          value: http://0.0.0.0:2380
+        - name: ETCD_LISTEN_CLIENT_URLS
+          value: http://0.0.0.0:2379
+        - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+          value: http://0.0.0.0:2380
+        - name: ETCD_ADVERTISE_CLIENT_URLS
+          value: http://0.0.0.0:2379
+        - name: ETCD_INITIAL_CLUSTER
+          value: {{ include "sdp.name" . }}-etcd=http://0.0.0.0:2380
+        - name: ETCD_DATA_DIR
+          value: /var/etcd/data
+        - name: ETCD_MAX_TXN_OPS
+          value: {{ quote .Values.etcd.maxTxnOps }}
+        volumeMounts:
+        - name: {{ include "sdp.name" . }}-etcd-data
+          mountPath: /var/etcd
+      volumes:
+      - name: {{ include "sdp.name" . }}-etcd-data
+        emptyDir: {}
+{{- end }}

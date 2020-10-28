@@ -52,6 +52,7 @@ telescope: {{ .Values.telescope }}
 {{- define "sdp.wait-for-etcd" -}}
 - name: wait-for-etcd
   image: {{ .Values.etcd.image }}:v{{ .Values.etcd.version }}
+  imagePullPolicy: {{ .Values.etcd.imagePullPolicy }}
   command: ["/bin/sh", "-c", "while ( ! etcdctl endpoint health ); do sleep 1; done"]
   env:
   - name: ETCDCTL_ENDPOINTS
