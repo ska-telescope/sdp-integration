@@ -1,0 +1,57 @@
+variables:
+  GIT_STRATEGY: clone
+
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_COMMIT_BRANCH
+
+stages:
+  - lint
+  - build
+  - publish
+
+image: quay.io/helmpack/chart-testing:latest
+
+# ============================================================================
+# Lint Helm chart
+# ============================================================================
+
+lint:
+  stage: lint
+  script:
+    - helm lint charts/sdp
+
+# ============================================================================
+# Build Helm chart
+# ============================================================================
+
+.build_helm:
+  stage: build
+  artifacts:
+    paths:
+      - sdp-*.tgz
+    expire_in: 1 week
+
+build_dev:
+  extends: .build_helm
+  except: [master]
+  script:
+    - version=$(awk '/^version/ {print $2}' charts/sdp/Chart.yaml)
+    - helm package charts/sdp --dependency-update --version=${version}+${CI_COMMIT_SHORT_SHA}
+
+build_release:
+  extends: .build_helm
+  only: [master]
+  script:
+    - helm package charts/sdp --dependency-update
+
+# ============================================================================
+# Publish Helm chart (master only)
+# ============================================================================
+
+publish:
+  stage: publish
+  only: [master]
+  script:
+    - curl --user ${HELM_USERNAME}:${HELM_PASSWORD} --upload-file sdp-*.tgz ${HELM_HOST}/repository/helm-chart/
