@@ -54,10 +54,3 @@ Helm
 
 Helm is available from most typical package managers, see `Introduction to Helm
 <https://helm.sh/docs/intro/>`_.
-
-If you are using Helm for the first time, you need to add the ``stable`` chart
-repository:
-
-.. code-block::
-
-    $ helm repo add stable https://kubernetes-charts.storage.googleapis.com/

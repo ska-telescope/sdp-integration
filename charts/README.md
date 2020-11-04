@@ -1,80 +1,54 @@
 # Running the SDP stand-alone
 
-## Installing the etcd operator
+## Create the namespace for SDP workflows
 
-The SDP configuration database is implemented on top of [etcd](https://etcd.io),
-a strongly consistent, distributed key-value store that provides a reliable way
-to store data that needs to be accessed by a distributed system or cluster of
-machines.
-
-Before deploying the SDP itself, you need to install the `etcd-operator` Helm
-chart. This provides a convenient way to create and manage etcd clusters in
-other charts.
-
-If you have a fresh install of Helm, you need to add the `stable` repository:
+The SDP deploys its workflows and their execution engines into a separate
+Kubernetes namespace from the controllers. Before deploying the SDP you need to
+create this namespace, which by default is called `sdp`:
 
 ```console
-$ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+$ kubectl create namespace sdp
 ```
-
-The `sdp-integration` charts directory contains a file called
-`etcd-operator.yaml` with settings for the chart. This turns off parts which
-are not used (the backup and restore operators).
-
-First go to the charts directory:
-
-```console
-$ cd [sdp-prototype]/charts
-```
-
-Then install the `etcd-operator` chart with:
-
-```console
-$ helm install etcd stable/etcd-operator -f etcd-operator.yaml
-```
-
-If you now execute:
-
-```console
-$ kubectl get pod --watch
-```
-
-You should eventually see an pod called `etcd-etcd-operator-etcd-operator-[...]`
-in 'Running' state (yes, Helm is exceedingly redundant with its names). If not
-wait a bit, if you try to go to the next step before this has completed there is
-a  chance it will fail.
 
 ## Deploying the SDP
 
-At this point you should be able to deploy the SDP. Install the `sdp-prototype`
-chart with the release name `test`:
+Releases of the SDP Helm chart are published in the EngageSKA Nexus repository.
+To install the released version, you need to add this chart repository to helm:
 
 ```console
-$ helm install test sdp-prototype
+$ helm repo add ska https://nexus.engageska-portugal.pt/repository/helm-chart
 ```
 
-You can again watch the deployment in progress using `kubectl`:
+The chart can be installed with the command (assuming the release name is `test`):
+
+```console
+$ helm install test ska/sdp
+```
+
+You can watch the deployment in progress using `kubectl`:
 
 ```console
 $ kubectl get pod --watch
 ```
 
-Pods associated with Tango might go down a couple times before they
-start correctly, this seems to be normal. You can check the logs of
-pods (copy the full name from `kubectl` output) to verify that they
-are doing okay:
+
+You can check the logs of pods to verify that they are doing okay:
 
 ```console
-$ kubectl logs test-sdp-prototype-lmc-[...] sdp-subarray-1
-1|2020-08-06T15:17:41.369Z|INFO|MainThread|init_device|subarray.py#110|SDPSubarray|Initialising SDP Subarray: mid_sdp/elt/subarray_1
+$ kubectl logs sdp-lmc-subarray-1-0
 ...
-1|2020-08-06T15:17:41.377Z|INFO|MainThread|init_device|subarray.py#140|SDPSubarray|SDP Subarray initialised: mid_sdp/elt/subarray_1
-$ kubectl logs test-sdp-prototype-proccontrol-[...]
+1|2020-11-04T20:05:03.615Z|INFO|MainThread|init_device|subarray.py#101|SDPSubarray|Initialising SDP Subarray: mid_sdp/elt/subarray_1
 ...
-1|2020-08-06T15:14:30.068Z|DEBUG|MainThread|main|processing_controller.py#192||Waiting...
-$ kubectl logs test-sdp-prototype-helmdeploy-[...]
+1|2020-11-04T20:05:03.640Z|INFO|MainThread|init_device|subarray.py#137|SDPSubarray|SDP Subarray initialised: mid_sdp/elt/subarray_1
 ...
-1|2020-08-06T15:14:31.662Z|INFO|MainThread|main|helm_deploy.py#146||Found 0 existing deployments.
+$ kubectl logs sdp-proccontrol-0
+...
+1|2020-11-04T20:04:24.528Z|DEBUG|MainThread|main_loop|processing_controller.py#221||Waiting...
+...
+$ kubectl logs sdp-helmdeploy-0
+...
+1|2020-11-04T20:04:19.989Z|INFO|MainThread|main|ska_sdp_helmdeploy.py#187||Found 0 existing deployments.
+...
 ```
 
 If it looks like this, there is a good chance everything has been deployed
@@ -84,12 +58,11 @@ correctly.
 
 ### Connecting to the configuration database
 
-By default the `sdp-prototype` chart deploys a 'console' pod which enables you
-to interact with the configuration database. You can start a shell in the pod
-by doing:
+The `sdp` chart deploys a 'console' pod which enables you to interact with the
+configuration database. You can start a shell in the pod by doing:
 
 ```console
-$ kubectl exec -it deploy/test-sdp-prototype-console -- /bin/bash
+$ kubectl exec -it sdp-console-0 -- bash
 ```
 
 This will allow you to use the `sdpcfg` command:
@@ -97,9 +70,12 @@ This will allow you to use the `sdpcfg` command:
 ```console
 # sdpcfg ls -R /
 Keys with / prefix:
+/subarray/01
+/subarray/02
+/subarray/03
 ```
 
-Which correctly shows that the configuration is currently empty.
+Which shows that the configuration contains the state of the Tango devices.
 
 ### Starting a workflow
 
@@ -107,8 +83,8 @@ Assuming the configuration is prepared as explained in the previous
 section, we can now add a processing block to the configuration:
 
 ```console
-# sdpcfg process batch:test_dask:0.2.1
-OK, pb_id = pb-sdpcfg-20200425-00000
+# sdpcfg process batch:test_dask:0.2.2
+OK, pb_id = pb-sdpcfg-20201104-00000
 ```
 
 The processing block is created with the `/pb` prefix in the
@@ -117,26 +93,26 @@ configuration:
 ```console
 # sdpcfg ls values -R /pb
 Keys with /pb prefix:
-/pb/pb-sdpcfg-20200425-00000 = {
+/pb/pb-sdpcfg-20201104-00000 = {
   "dependencies": [],
-  "id": "pb-sdpcfg-20200425-00000",
+  "id": "pb-sdpcfg-20201104-00000",
   "parameters": {},
   "sbi_id": null,
   "workflow": {
     "id": "test_dask",
     "type": "batch",
-    "version": "0.2.0"
+    "version": "0.2.2"
   }
 }
-/pb/pb-sdpcfg-20200425-00000/owner = {
+/pb/pb-sdpcfg-20201104-00000/owner = {
   "command": [
-    "testdask.py",
-    "pb-sdpcfg-20200425-00000"
+    "test_dask.py",
+    "pb-sdpcfg-20201104-00000"
   ],
-  "hostname": "proc-pb-sdpcfg-20200425-00000-workflow-7pfkl",
+  "hostname": "proc-pb-sdpcfg-20201104-00000-workflow-97p8g",
   "pid": 1
 }
-/pb/pb-sdpcfg-20200425-00000/state = {
+/pb/pb-sdpcfg-20201104-00000/state = {
   "resources_available": true,
   "status": "RUNNING"
 }
@@ -151,29 +127,30 @@ the Helm deployer which actually makes the deployments:
 ```console
 # sdpcfg ls values -R /deploy
 Keys with /deploy prefix:
-/deploy/proc-pb-sdpcfg-20200425-00000-dask = {
+/deploy/proc-pb-sdpcfg-20201104-00000-dask = {
   "args": {
-    "chart": "stable/dask",
+    "chart": "dask/dask",
     "values": {
       "jupyter.enabled": "false",
+      "jupyter.rbac": "false",
       "scheduler.serviceType": "ClusterIP",
       "worker.replicas": 2
     }
   },
-  "id": "proc-pb-sdpcfg-20200425-00000-dask",
+  "id": "proc-pb-sdpcfg-20201104-00000-dask",
   "type": "helm"
 }
-/deploy/proc-pb-sdpcfg-20200425-00000-workflow = {
+/deploy/proc-pb-sdpcfg-20201104-00000-workflow = {
   "args": {
     "chart": "workflow",
     "values": {
-      "env.SDP_CONFIG_HOST": "test-sdp-prototype-etcd-client.default.svc.cluster.local",
+      "env.SDP_CONFIG_HOST": "sdp-etcd-client.default.svc.cluster.local",
       "env.SDP_HELM_NAMESPACE": "sdp",
-      "pb_id": "pb-sdpcfg-20200425-00000",
-      "wf_image": "nexus.engageska-portugal.pt/sdp-prototype/workflow-test-dask:0.2.0"
+      "pb_id": "pb-sdpcfg-20201104-00000",
+      "wf_image": "nexus.engageska-portugal.pt/sdp-prototype/workflow-test-dask:0.2.2"
     }
   },
-  "id": "proc-pb-sdpcfg-20200425-00000-workflow",
+  "id": "proc-pb-sdpcfg-20201104-00000-workflow",
   "type": "helm"
 }
 ```
@@ -185,10 +162,10 @@ follows (on the host):
 ```console
 $ kubectl get pod -n sdp
 NAME                                                            READY   STATUS    RESTARTS   AGE
-proc-pb-sdpcfg-20200425-00000-dask-scheduler-78b4974ddf-w4x8x   1/1     Running   0          4m41s
-proc-pb-sdpcfg-20200425-00000-dask-worker-85584b4598-p6qpw      1/1     Running   0          4m41s
-proc-pb-sdpcfg-20200425-00000-dask-worker-85584b4598-x2bh5      1/1     Running   0          4m41s
-proc-pb-sdpcfg-20200425-00000-workflow-7pfkl                    1/1     Running   0          4m46s
+proc-pb-sdpcfg-20201104-00000-dask-scheduler-55c74999f6-tvrtx   1/1     Running   0          52s
+proc-pb-sdpcfg-20201104-00000-dask-worker-677545d9f9-j9ffv      1/1     Running   0          52s
+proc-pb-sdpcfg-20201104-00000-dask-worker-677545d9f9-jphzr      1/1     Running   0          52s
+proc-pb-sdpcfg-20201104-00000-workflow-97p8g                    1/1     Running   0          54s
 ```
 
 ### Cleaning up
@@ -197,10 +174,10 @@ Finally, let us remove the processing block from the configuration (in the SDP
 console shell):
 
 ```console
-# sdpcfg delete -R /pb/pb-sdpcfg-20200425-00000
-/pb/pb-sdpcfg-20200425-00000
-/pb/pb-sdpcfg-20200425-00000/owner
-/pb/pb-sdpcfg-20200425-00000/state
+# sdpcfg delete -R /pb/pb-sdpcfg-20201104-00000
+/pb/pb-sdpcfg-20201104-00000
+/pb/pb-sdpcfg-20201104-00000/owner
+/pb/pb-sdpcfg-20201104-00000/state
 OK
 ```
 
@@ -210,22 +187,29 @@ undone as well.
 
 ## Accessing the Tango interface
 
-By default the sdp-prototype chart installs the iTango shell pod from the
-tango-base chart. You can access it as follows:
+By default, the `sdp` chart does not deploy the iTango shell pod from the
+`tango-base` chart. To enable it, you can upgrade the release with:
 
 ```console
-$ kubectl exec -it itango-tango-base-sdp-prototype -- /venv/bin/itango3
+helm upgrade test ska/sdp --set tango-base.itango.enabled=true
 ```
 
-You should be able to query the SDP Tango devices:
+Then you can start an iTango session with:
+
+```console
+$ kubectl exec -it tango-base-itango-console -- itango3
+```
+
+You should be able to list the Tango devices:
 
 ```python
 In [1]: lsdev
 Device                                   Alias                     Server                    Class
 ---------------------------------------- ------------------------- ------------------------- --------------------
-mid_sdp/elt/master                                                 SdpMaster/1               SdpMaster
-mid_sdp/elt/subarray_1                                             SdpSubarray/1             SdpSubarray
-mid_sdp/elt/subarray_2                                             SdpSubarray/2             SdpSubarray
+mid_sdp/elt/master                                                 SDPMaster/1               SDPMaster
+mid_sdp/elt/subarray_1                                             SDPSubarray/1             SDPSubarray
+mid_sdp/elt/subarray_2                                             SDPSubarray/2             SDPSubarray
+mid_sdp/elt/subarray_3                                             SDPSubarray/3             SDPSubarray
 sys/access_control/1                                               TangoAccessControl/1      TangoAccessControl
 sys/database/2                                                     DataBaseds/2              DataBase
 sys/rest/0                                                         TangoRestServer/rest      TangoRestServer
@@ -251,7 +235,7 @@ Out[6]: <obsState.EMPTY: 0>
 
 In [7]: config_sbi = '''
     ...: {
-    ...:   "id": "sbi-mvp01-20200425-00000",
+    ...:   "id": "sbi-mvp01-20201104-00000",
     ...:   "max_length": 21600.0,
     ...:   "scan_types": [
     ...:     {
@@ -263,29 +247,29 @@ In [7]: config_sbi = '''
     ...:   ],
     ...:   "processing_blocks": [
     ...:     {
-    ...:       "id": "pb-mvp01-20200425-00000",
-    ...:       "workflow": {"type": "realtime", "id": "test_realtime", "version": "0.1.0"},
+    ...:       "id": "pb-mvp01-20201104-00000",
+    ...:       "workflow": {"type": "realtime", "id": "test_realtime", "version": "0.2.1"},
     ...:       "parameters": {}
     ...:     },
     ...:     {
-    ...:       "id": "pb-mvp01-20200425-00001",
-    ...:       "workflow": {"type": "realtime", "id": "test_realtime", "version": "0.1.0"},
+    ...:       "id": "pb-mvp01-20201104-00001",
+    ...:       "workflow": {"type": "realtime", "id": "test_realtime", "version": "0.2.1"},
     ...:       "parameters": {}
     ...:     },
     ...:     {
-    ...:       "id": "pb-mvp01-20200425-00002",
-    ...:       "workflow": {"type": "batch", "id": "test_batch", "version": "0.1.0"},
+    ...:       "id": "pb-mvp01-20201104-00002",
+    ...:       "workflow": {"type": "batch", "id": "test_batch", "version": "0.2.1"},
     ...:       "parameters": {},
     ...:       "dependencies": [
-    ...:         {"pb_id": "pb-mvp01-20200425-00000", "type": ["visibilities"]}
+    ...:         {"pb_id": "pb-mvp01-20201104-00000", "type": ["visibilities"]}
     ...:       ]
     ...:     },
     ...:     {
-    ...:       "id": "pb-mvp01-20200425-00003",
-    ...:       "workflow": {"type": "batch", "id": "test_batch", "version": "0.1.0"},
+    ...:       "id": "pb-mvp01-20201104-00003",
+    ...:       "workflow": {"type": "batch", "id": "test_batch", "version": "0.2.1"},
     ...:       "parameters": {},
     ...:       "dependencies": [
-    ...:         {"pb_id": "pb-mvp01-20200425-00002", "type": ["calibration"]}
+    ...:         {"pb_id": "pb-mvp01-20201104-00002", "type": ["calibration"]}
     ...:       ]
     ...:     }
     ...:   ]
@@ -336,57 +320,16 @@ To remove the SDP deployment from the cluster, do:
 $ helm uninstall test
 ```
 
-and to remove the etcd operator, do:
+## Developing the SDP chart
+
+If you want to install the chart from the source code in the SDP Integration
+repository, for instance if you are developing a new version, then you can do
+it like this:
 
 ```console
-$ helm uninstall etcd
+$ cd charts
+$ helm install --dependency-update test sdp
 ```
 
-## Troubleshooting
-
-### etcd doesn't start (DNS problems)
-
-Something that often happens on home set-ups is that `test-sdp-prototype-etcd`
-does not start, which means that quite a bit of the SDP system will not work.
-Try executing `kubectl logs` on the pod to get a log. You might see something
-like this as the last three lines:
-
-```console
-... I | pkg/netutil: resolving sdp-prototype-etcd-9s4hbbmmvw.k8s-sdp-prototype-etcd.default.svc:2380 to 10.1.0.21:2380
-... I | pkg/netutil: resolving sdp-prototype-etcd-9s4hbbmmvw.k8s-sdp-prototype-etcd.default.svc:2380 to 92.242.132.24:2380
-... C | etcdmain: failed to resolve http://sdp-prototype-etcd-9s4hbbmmvw.sdp-prototype-etcd.default.svc:2380 to match --initial-cluster=sdp-prototype-etcd-9s4hbbmmvw=http://sdp-prototype-etcd-9s4hbbmmvw.sdp-prototype-etcd.default.svc:2380 ("http://10.1.0.21:2380"(resolved from "http://sdp-prototype-etcd-9s4hbbmmvw.sdp-prototype-etcd.default.svc:2380") != "http://92.242.132.24:2380"(resolved from "http://sdp-prototype-etcd-9s4hbbmmvw.sdp-prototype-etcd.default.svc:2380"))
-```
-
-This informs you that etcd tried to resolve its own address, and for
-some reason got two different answers both times. Interestingly, the
-`92.242.132.24` address is not actually in-cluster, but from the Internet,
-and re-appears if we attempt to `ping` a nonexistent DNS name:
-
-```console
-$ ping does.not.exist
-Pinging does.not.exist [92.242.132.24] with 32 bytes of data:
-Reply from 92.242.132.24: bytes=32 time=25ms TTL=242
-```
-
-What is going on here is that that your ISP has installed a DNS server
-that redirects unknown DNS names to a server showing a 'helpful' error
-message complete with a bunch of advertisements. For some reason this
-seems to cause a problem with Kubernetes' internal DNS resolution.
-
-How can this be prevented? Theoretically it should be enough to force
-the DNS server to one that does not have this problem (like Google's
-`8.8.8.8` and `8.8.4.4` DNS servers), but that is tricky to get working.
-Alternatively you can simply restart the entire thing until it works.
-Unfortunately this is not quite as straightforward with `etcd-operator`,
-as it sets the `restartPolicy` to `Never`, which means that any `etcd`
-pod only gets once chance, and then will remain `Failed` forever. The
-quickest way seems to be to delete the `EtcdCluster` object, then
-`upgrade` the chart in order to re-install it:
-
-```console
-$ kubectl delete etcdcluster test-sdp-prototype-etcd
-$ helm upgrade test sdp-prototype
-```
-
-This can generally be repeated until by pure chance the two DNS resolutions
-return the same result and `etcd` starts up.
+The `--dependency-update` flag downloads the `tango-base` chart on which the
+`sdp` chart depends.
