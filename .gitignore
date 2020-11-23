@@ -53,3 +53,8 @@ test_reports.xml
 **/.pytest_cache
 
 **/.eggs
+
+# Helm chart lock files and dependencies
+
+/charts/*/Chart.lock
+/charts/*/charts/*.tgz

@@ -135,6 +135,8 @@ spec:
           value: {{ include "sdp.etcd-host" $ }}
         - name: TANGO_HOST
           value: {{ $tangohost }}
+        - name: FEATURE_ALL_COMMANDS_HAVE_ARGUMENT
+          value: {{ $.Values.lmc.allCommandsHaveArgument | int | quote }}
         resources:
 {{ toYaml $.Values.resources | indent 10 }}
 {{- with $.Values.nodeSelector }}
