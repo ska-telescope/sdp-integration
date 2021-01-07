@@ -1,8 +1,8 @@
 SDP Integration
 ===============
 
-The ``sdp-integration`` repository integrates the components of the SKA Science
-Data Processor (SDP). It contains the Helm chart to deploy the SDP as a
+The ``ska-sdp-integration`` repository integrates the components of the SKA
+Science Data Processor (SDP). It contains the Helm chart to deploy the SDP as a
 subsystem of the SKA, or stand-alone for testing.
 
 This documentation also gives a overview of the design of the SDP. It describes

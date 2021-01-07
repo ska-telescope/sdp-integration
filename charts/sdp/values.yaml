@@ -52,7 +52,7 @@ proccontrol:
   imagePullPolicy: IfNotPresent
   replicas: 1
   workflows:
-    url: https://gitlab.com/ska-telescope/sdp-workflows-procfunc/-/raw/master/workflows.json
+    url: https://gitlab.com/ska-telescope/sdp/ska-sdp-science-pipelines/-/raw/master/workflows.json
     refresh: 300
 
 # Helm deployment controller
@@ -69,7 +69,7 @@ helmdeploy:
   createNamespace: false
   createClusterRole: false
   chart_repo:
-    url: https://gitlab.com/ska-telescope/sdp-helmdeploy-charts/-/raw/master/chart-repo/
+    url: https://gitlab.com/ska-telescope/sdp/ska-sdp-helmdeploy-charts/-/raw/master/chart-repo/
     refresh: 300
 
 # LMC (Tango devices)

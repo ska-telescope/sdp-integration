@@ -7,20 +7,34 @@ workflow:
     - if: $CI_COMMIT_BRANCH
 
 stages:
-  - lint
+  - test
   - build
   - publish
 
 image: quay.io/helmpack/chart-testing:latest
 
 # ============================================================================
-# Lint Helm chart
+# Lint Helm chart and build docs
 # ============================================================================
 
 lint:
-  stage: lint
+  stage: test
   script:
     - helm lint charts/sdp
+
+docs:
+  stage: test
+  image: python:latest
+  before_script:
+    - pip3 install -r docs/requirements.txt
+  script:
+    - cd docs
+    - make html
+  artifacts:
+    paths:
+      - docs/build/html
+    expire_in: 1 week
+    when: always
 
 # ============================================================================
 # Build Helm chart
