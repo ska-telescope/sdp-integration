@@ -24,7 +24,7 @@ they are built.
   running/requirements
   running/standalone
   running/integration
-
+  running/helm-chart
 
 Indices and tables
 ------------------

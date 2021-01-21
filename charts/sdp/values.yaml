@@ -62,10 +62,11 @@ helmdeploy:
   function: runtime-deployment
   domain: science-data-processing
   image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-helmdeploy
-  version: 0.7.1
+  version: 0.7.2
   imagePullPolicy: IfNotPresent
   replicas: 1
   namespace: sdp
+  prefix: ''
   createNamespace: false
   createClusterRole: false
   chart_repo:

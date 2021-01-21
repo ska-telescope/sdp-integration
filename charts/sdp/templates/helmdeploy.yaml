@@ -68,6 +68,8 @@ spec:
           value: {{ include "sdp.etcd-host" . }}
         - name: SDP_HELM_NAMESPACE
           value: {{ quote .Values.helmdeploy.namespace }}
+        - name: SDP_HELM_PREFIX
+          value: {{ quote .Values.helmdeploy.prefix}}
         - name: SDP_CHART_REPO_URL
           value: {{ quote .Values.helmdeploy.chart_repo.url }}
         - name: SDP_CHART_REPO_REFRESH
