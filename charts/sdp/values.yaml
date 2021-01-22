@@ -76,7 +76,7 @@ helmdeploy:
 # LMC (Tango devices)
 lmc:
   image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-lmc
-  version: 0.15.0
+  version: 0.16.0
   imagePullPolicy: IfNotPresent
   enabled: true
   allCommandsHaveArgument: false
