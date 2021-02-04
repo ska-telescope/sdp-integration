@@ -6,7 +6,7 @@ prototype (SKAMPI), or stand-alone for testing.
 
 The components are built as Docker images from the following repositories:
 
-* [Local monitoring and control](https://gitlab.com/ska-telescope/sdp-lmc/)
-* [Processing controller](https://gitlab.com/ska-telescope/sdp-proccontrol/)
-* [Helm deployer](https://gitlab.com/ska-telescope/sdp-helmdeploy/)
-* [Console](https://gitlab.com/ska-telescope/sdp-console/)
+* [Local monitoring and control](https://gitlab.com/ska-telescope/sdp/ska-sdp-lmc/)
+* [Processing controller](https://gitlab.com/ska-telescope/sdp/ska-sdp-proccontrol/)
+* [Helm deployer](https://gitlab.com/ska-telescope/sdp/ska-sdp-helmdeploy/)
+* [Console](https://gitlab.com/ska-telescope/sdp/ska-sdp-console/)
