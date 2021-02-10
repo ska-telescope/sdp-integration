@@ -1,4 +1,0 @@
-helmdeploy:
-  chart_repo:
-    url: https://gitlab.com/ska-telescope/sdp/ska-sdp-helmdeploy-charts/-/raw/SIM-717-visibility-receive-chart/chart-repo/
-    refresh: 300
