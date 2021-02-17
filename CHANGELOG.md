@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.7
+
+* Update LMC to 0.16.2. This implements ADR-22 (versioning of JSON schemas) in
+  the subarray device. Only the latest version of the interface (0.2) is
+  supported by the AssignResources and Configure commands.
+
 ## 0.3.6
 
 * Update LMC to 0.16.1. This works around a problem in the etcd interface which
