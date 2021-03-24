@@ -63,9 +63,10 @@ Value                            Default                                        
 ``lmc.image``                    ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-lmc``  LMC image
 ``lmc.version``                  (see `values file`_)                                       LMC version
 ``lmc.imagePullPolicy``          ``IfNotPresent``                                           LMC image pull policy
-``lmc.enabled``                  ``true``                                                   Enable the LMC. If set to false, the SDP will run in headless mode.
-``lmc.allCommandsHaveArgument``  ``false``                                                  Enable all Tango device commands to receive a transaction ID.
-``lmc.deviceServers``            (see `values file`_)                                       List of Tango device servers to deploy. The default values deploy the Master device and three Subarray devices.
+``lmc.enabled``                  ``true``                                                   Enable the LMC. If set to false, the SDP will run in headless mode
+``lmc.allCommandsHaveArgument``  ``false``                                                  Enable all Tango device commands to receive a transaction ID
+``lmc.prefix``                   ``test``                                                   Telescope prefix for Tango device names (e.g. ``low`` or ``mid``)
+``lmc.nsubarray``                ``1``                                                      Number of subarrays to deploy
 ===============================  =========================================================  ===========
 
 

@@ -35,9 +35,9 @@ author = 'SKA SDP Developers'
 # built documents.
 #
 # The short X.Y.Z version.
-version = '0.3.7'
+version = '0.4.0'
 # The full version, including alpha/beta/rc pre-release tags.
-release = '0.3.7'
+release = '0.4.0'
 
 # -- General configuration ------------------------------------------------
 

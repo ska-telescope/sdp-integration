@@ -1,5 +1,4 @@
 system: sdp
-telescope: SKA-mid
 
 # Global parameters
 global: {}
@@ -18,7 +17,7 @@ tango-base:
 
 # Configuration database
 etcd:
-  component: configuration-database
+  component: sdp-configuration-database
   subsystem: execution-control
   function: configuration
   domain: science-data-processing
@@ -31,7 +30,7 @@ etcd:
 
 # Console
 console:
-  component: maintenance-interface
+  component: sdp-console
   subsystem: execution-control
   function: maintenance-control
   domain: science-data-processing
@@ -43,7 +42,7 @@ console:
 
 # Processing controller
 proccontrol:
-  component: processing-controller
+  component: sdp-processing-controller
   subsystem: execution-control
   function: PB-execution
   domain: science-data-processing
@@ -57,7 +56,7 @@ proccontrol:
 
 # Helm deployment controller
 helmdeploy:
-  component: helm-deployer
+  component: sdp-helm-deployer
   subsystem: execution-control
   function: runtime-deployment
   domain: science-data-processing
@@ -75,48 +74,21 @@ helmdeploy:
 
 # LMC (Tango devices)
 lmc:
+  component: sdp-lmc
+  subsystem: execution-control
   image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-lmc
   version: 0.16.2
   imagePullPolicy: IfNotPresent
   enabled: true
   allCommandsHaveArgument: false
-  deviceServers:
-  - name: master
-    subsystem: execution-control
-    function: sdp-central-control
+  prefix: test
+  nsubarray: 1
+  master:
     domain: sdp-monitoring
-    image: "{{ .Values.lmc.image }}:{{ .Values.lmc.version }}"
-    imagePullPolicy: "{{ .Values.lmc.imagePullPolicy }}"
-    command: ["SDPMaster"]
-    args: ["1", "-v4"]
-    device: mid_sdp/elt/master
-  - name: subarray-1
-    subsystem: execution-control
-    function: sdp-subarray-observation
+    function: sdp-central-control
+  subarray:
     domain: subarray
-    image: "{{ .Values.lmc.image }}:{{ .Values.lmc.version }}"
-    imagePullPolicy: "{{ .Values.lmc.imagePullPolicy }}"
-    command: ["SDPSubarray"]
-    args: ["1", "-v4"]
-    device: mid_sdp/elt/subarray_1
-  - name: subarray-2
-    subsystem: execution-control
     function: sdp-subarray-observation
-    domain: subarray
-    image: "{{ .Values.lmc.image }}:{{ .Values.lmc.version }}"
-    imagePullPolicy: "{{ .Values.lmc.imagePullPolicy }}"
-    command: ["SDPSubarray"]
-    args: ["2", "-v4"]
-    device: mid_sdp/elt/subarray_2
-  - name: subarray-3
-    subsystem: execution-control
-    function: sdp-subarray-observation
-    domain: subarray
-    image: "{{ .Values.lmc.image }}:{{ .Values.lmc.version }}"
-    imagePullPolicy: "{{ .Values.lmc.imagePullPolicy }}"
-    command: ["SDPSubarray"]
-    args: ["3", "-v4"]
-    device: mid_sdp/elt/subarray_3
 
 nameOverride: ""
 fullnameOverride: ""
