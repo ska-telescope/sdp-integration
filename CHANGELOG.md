@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+
+* Add parameters to set the telescope prefix in Tango device names and the
+  number of subarrays to be deployed.
+* Update tango-base subchart to 0.2.16.
+
 ## 0.3.7
 
 * Update LMC to 0.16.2. This implements ADR-22 (versioning of JSON schemas) in

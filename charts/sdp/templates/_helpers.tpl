@@ -35,12 +35,11 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "sdp.labels" }}
-app: {{ template "sdp.name" . }}
-chart: {{ template "sdp.chart" . }}
+app: {{ include "sdp.name" . }}
+chart: {{ include "sdp.chart" . }}
 release: {{ .Release.Name }}
 heritage: {{ .Release.Service }}
 system: {{ .Values.system }}
-telescope: {{ .Values.telescope }}
 {{- end }}
 
 {{/* Configuration database host */}}
