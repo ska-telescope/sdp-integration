@@ -3,7 +3,6 @@ variables:
 
 workflow:
   rules:
-    - if: $CI_MERGE_REQUEST_ID
     - if: $CI_COMMIT_BRANCH
 
 stages:
@@ -14,7 +13,7 @@ stages:
 image: quay.io/helmpack/chart-testing:latest
 
 # ============================================================================
-# Lint Helm chart and build docs
+# Lint Helm chart, build docs and run tests
 # ============================================================================
 
 lint:
@@ -36,26 +35,71 @@ docs:
     expire_in: 1 week
     when: always
 
+.k8s-test:
+  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+  tags:
+    - k8srunner
+  variables:
+    SERVICE_ACCOUNT: ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH
+    NAMESPACE: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH
+    NAMESPACE_SDP: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-sdp
+    RELEASE: test-$CI_COMMIT_BRANCH
+
+test:
+  extends: .k8s-test
+  stage: test
+  before_script:
+    - apt-get -y update
+    - apt-get install -y curl ca-certificates jq --no-install-recommends
+  script:
+    - kubectl delete namespace ${NAMESPACE} --ignore-not-found
+    - kubectl create namespace ${NAMESPACE}
+    - kubectl delete namespace ${NAMESPACE_SDP} --ignore-not-found
+    - kubectl create namespace ${NAMESPACE_SDP}
+    - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $NAMESPACE $NAMESPACE_SDP || true
+    - helm dependency update charts/sdp
+    - helm install ${RELEASE} charts/sdp -n ${NAMESPACE} --set helmdeploy.namespace=${NAMESPACE_SDP}
+    - bash scripts/smoketest.sh ${NAMESPACE}
+  environment:
+    name: test/$CI_COMMIT_REF_NAME
+    kubernetes:
+      namespace: $NAMESPACE
+    on_stop: test-cleanup
+    auto_stop_in: 2 hours
+
+test-cleanup:
+  extends: .k8s-test
+  stage: .post
+  when: manual
+  script:
+    - kubectl delete namespace ${NAMESPACE_SDP} --ignore-not-found
+    - kubectl delete namespace ${NAMESPACE} --ignore-not-found
+  environment:
+    name: test/$CI_COMMIT_REF_NAME
+    kubernetes:
+      namespace: $NAMESPACE
+    action: stop
+
 # ============================================================================
 # Build Helm chart
 # ============================================================================
 
-.build_helm:
+.build-helm:
   stage: build
   artifacts:
     paths:
       - sdp-*.tgz
     expire_in: 1 week
 
-build_dev:
-  extends: .build_helm
+build-dev:
+  extends: .build-helm
   except: [master]
   script:
     - version=$(awk '/^version/ {print $2}' charts/sdp/Chart.yaml)
     - helm package charts/sdp --dependency-update --version=${version}+${CI_COMMIT_SHORT_SHA}
 
-build_release:
-  extends: .build_helm
+build-release:
+  extends: .build-helm
   only: [master]
   script:
     - helm package charts/sdp --dependency-update
