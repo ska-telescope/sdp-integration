@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.1
+
+* Update Helm deployer to 0.8.0. Values to pass to a Helm chart are now written
+  to a temporary YAML file. This allows hierarchical structures in the values to
+  be passed to the charts.
+* Update processing controller to 0.9.0. This is needed to work with the new
+  version of the Helm deployer.
+* Update console to 0.2.1. This updates the software versions installed in this
+  component.
+
 ## 0.4.0
 
 * Add parameters to set the telescope prefix in Tango device names and the
