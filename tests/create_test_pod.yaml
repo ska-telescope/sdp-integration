@@ -5,10 +5,12 @@ metadata:
 spec:
   containers:
     - name: itango
-       # image: nexus.engageska-portugal.pt/ska-docker/tango-itango:9.3.3.1
-      image: artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.1
+      image: nexus.engageska-portugal.pt/ska-docker/tango-itango:9.3.3.1
+      #image: artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.1
       command: ["/usr/local/bin/wait-for-it.sh"]
       args: ["databaseds-tango-base-test:10000","--","sleep","infinity"]
       env:
         - name: TANGO_HOST
           value: databaseds-tango-base-test:10000
+        - name: SDP_CONFIG_HOST
+          value: sdp-etcd-client
