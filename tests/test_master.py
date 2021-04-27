@@ -35,7 +35,7 @@ def set_device_state(master_device, initial_state):
     """Set the device state.
 
     :param master_device: SDPMaster device
-    :param state_value: desired device state
+    :param initial_state: desired device state
 
     """
     # Set the device state if incorrect
@@ -88,16 +88,16 @@ def check_device_state(master_device, final_state):
 # -----------------------------------------------------------------------------
 
 def wait_for_change(device, state):
-   """ Wait for any processing time un til device state changes
+   """ Wait for any Tango processing delay until device state changes
    
-   :param device: Tamgo device DevProxy
+   :param device: SDPMaster device
    :param state: The expected state
    """
    for _ in range(10):
       if device.State() == tango.DevState.names[state]:
          break
-      sleep(1)
+      sleep(0.5)
    else:
-      pytest.fail("State failed to change after 10 seconds!")
+      pytest.fail("State failed to change after 5 seconds!")
    return
 
