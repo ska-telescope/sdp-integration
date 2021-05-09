@@ -1,11 +1,10 @@
 Feature: SDP Master Device
 
     Scenario Outline: Command succeeds in allowed state
-        Given I have an SDPMaster device
-        When the state is <initial_state>
-        And I call <command>
-        Then the state should be <final_state>
-#        And the log should contain a transaction ID
+        Given I connect to the SDP master
+        And its state is <initial_state>
+        When I call <command>
+        Then its state should be <final_state>
 
         Examples:
         | command | initial_state | final_state |
@@ -21,4 +20,3 @@ Feature: SDP Master Device
         | On      | OFF           | ON          |
         | On      | STANDBY       | ON          |
         | On      | DISABLE       | ON          |
-
