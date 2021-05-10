@@ -1,48 +1,78 @@
-import os
-import logging
-from time import sleep
+import time
 
-import pytest
 import tango
 
+import pytest
+from pytest_bdd import scenarios, given, when, then, parsers
+from common import wait_for_state
 
-from pytest_bdd import scenario, given, when, then
+DEVICE_NAME = "test_sdp/elt/master"
 
-logger = logging.getLogger(__name__)
+scenarios("features/master.feature")
 
-def wait_for_change(state):
-   for _ in range(10):
-      if pytest.dp.State() == state:
-         break
-      sleep(1)
-   else:
-      pytest.fail("State failed to change after 10 seconds!")
-   return
+# -----------
+# Given steps
+# -----------
 
-@pytest.fixture
-def global_var():
-   pytest.dp = None
 
-@scenario("features/master.feature", "On command succeeds")
-def test_on_command():
-   pass
-
-@given("the SDP Master device")
+@given("I connect to the SDP master", target_fixture="master_device")
 def connect_to_master_device():
-   pytest.dp = tango.DeviceProxy("test_sdp/elt/master")
+    proxy = tango.DeviceProxy(DEVICE_NAME)
+    return proxy
 
-@given("its state is STANDBY")
-def check_standby_state():
-   if pytest.dp.State() != tango._tango.DevState.STANDBY:
-      pytest.dp.Standby()
-   wait_for_change(tango._tango.DevState.STANDBY)
 
-@when("I call On")
-def call_on_command():
-   pytest.dp.On()
+@given(parsers.parse("its state is {initial_state:S}"))
+@given("its state is <initial_state>")
+def set_state(master_device, initial_state):
+    """
+    Set the device state.
 
-@then("its state should become ON")
-def check_state_change():
-   wait_for_change(tango._tango.DevState.ON)
-   logger.info("State change to ON")
-     
+    :param master_device: SDPMaster device
+    :param initial_state: desired device state
+
+    """
+    # Set the device state if incorrect
+    if master_device.State().name != initial_state:
+        # Call command to put device into the desired state
+        master_device.command_inout(initial_state)
+        # Wait until state attribute has been updated
+        wait_for_state(master_device, initial_state)
+
+
+# ----------
+# When steps
+# ----------
+
+
+@when(parsers.parse("I call {command:S}"))
+@when("I call <command>")
+def call_command(master_device, command):
+    """
+    Call a command.
+
+    :param master_device: SDPMaster device
+    :param command: name of command to call
+
+    """
+    # Check command is present
+    assert command in master_device.get_command_list()
+    # Call the command
+    master_device.command_inout(command)
+
+
+# ----------
+# Then steps
+# ----------
+
+
+@then(parsers.parse("its state should be {final_state:S}"))
+@then("its state should be <final_state>")
+def check_state(master_device, final_state):
+    """
+    Check the device state.
+
+    :param master_device: SDPMaster device
+    :param final_state: expected state value
+
+    """
+    wait_for_state(master_device, final_state)
