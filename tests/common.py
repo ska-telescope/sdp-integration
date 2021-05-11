@@ -4,7 +4,7 @@ import time
 import pytest
 
 
-def wait_for_predicate(predicate, description, count=20, wait=0.5):
+def wait_for_predicate(predicate, description, count=120, wait=0.5):
     """
     Wait for predicate to be true.
 
