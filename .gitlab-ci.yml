@@ -58,14 +58,26 @@ test:
     - kubectl create namespace ${NAMESPACE_SDP}
     - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $NAMESPACE $NAMESPACE_SDP || true
     - helm dependency update charts/sdp
-    - helm install ${RELEASE} charts/sdp -n ${NAMESPACE} --set helmdeploy.namespace=${NAMESPACE_SDP}
-    - bash scripts/smoketest.sh ${NAMESPACE}
+    - helm install ${RELEASE} charts/sdp -n ${NAMESPACE} --set helmdeploy.namespace=${NAMESPACE_SDP} --wait
+    - kubectl -n ${NAMESPACE} create -f tests/sdp-testing.yaml
+    - kubectl -n ${NAMESPACE} wait pod/sdp-testing --for=condition=ready --timeout=300s
+    - kubectl cp tests ${NAMESPACE}/sdp-testing:tests
+    - kubectl -n ${NAMESPACE} exec sdp-testing -- pytest -vv --gherkin-terminal-reporter --gherkin-terminal-reporter-expanded --junitxml=unit-tests.xml tests
+  after_script:
+    - mkdir -p build/reports
+    - kubectl cp ${NAMESPACE}/sdp-testing:unit-tests.xml build/reports/unit-tests.xml
+    - kubectl -n ${NAMESPACE} delete -f tests/sdp-testing.yaml
   environment:
     name: test/$CI_COMMIT_REF_NAME
     kubernetes:
       namespace: $NAMESPACE
     on_stop: test-cleanup
     auto_stop_in: 2 hours
+  artifacts:
+    paths:
+      - build
+    expire_in: 1 week
+    when: always
 
 test-cleanup:
   extends: .k8s-test
