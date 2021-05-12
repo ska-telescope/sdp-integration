@@ -1,0 +1,62 @@
+{{- if .Values.opinterface.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sdp.name" . }}-opinterface
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp.labels" . | indent 4 }}
+    component: {{ .Values.opinterface.component }}
+    subsystem: {{ .Values.opinterface.subsystem }}
+    function: {{ .Values.opinterface.function }}
+    domain: {{ .Values.opinterface.domain }}
+    intent: production
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+  selector:
+    component: {{ .Values.opinterface.component }}
+    subsystem: {{ .Values.opinterface.subsystem }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "sdp.name" . }}-opinterface
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp.labels" . | indent 4 }}
+    component: {{ .Values.opinterface.component }}
+    subsystem: {{ .Values.opinterface.subsystem }}
+    function: {{ .Values.opinterface.function }}
+    domain: {{ .Values.opinterface.domain }}
+    intent: production
+spec:
+  replicas: {{ .Values.opinterface.replicas }}
+  selector:
+    matchLabels:
+      component: {{ .Values.opinterface.component }}
+      subsystem: {{ .Values.opinterface.subsystem }}
+  serviceName: {{ include "sdp.name" . }}-opinterface
+  template:
+    metadata:
+      labels:
+        {{- include "sdp.labels" . | indent 8 }}
+        component: {{ .Values.opinterface.component }}
+        subsystem: {{ .Values.opinterface.subsystem }}
+        function: {{ .Values.opinterface.function }}
+        domain: {{ .Values.opinterface.domain }}
+        intent: production
+    spec:
+      initContainers:
+      {{- include "sdp.wait-for-etcd" . | nindent 6 }}
+      containers:
+      - name: opinterface
+        image: {{ .Values.opinterface.image }}:{{ .Values.opinterface.version }}
+        imagePullPolicy: {{ .Values.opinterface.imagePullPolicy }}
+        env:
+        - name: SDP_CONFIG_HOST
+          value: {{ include "sdp.etcd-host" . }}
+{{- end }}
