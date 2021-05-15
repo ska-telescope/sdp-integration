@@ -62,9 +62,11 @@ proccontrol:
   version: 0.9.0
   imagePullPolicy: IfNotPresent
   replicas: 1
-  workflows:
-    url: https://gitlab.com/ska-telescope/sdp/ska-sdp-science-pipelines/-/raw/master/workflows.json
-    refresh: 300
+
+# Workflows
+workflows:
+  url: https://gitlab.com/ska-telescope/sdp/ska-sdp-science-pipelines/-/raw/master/workflows.json
+
 
 # Helm deployment controller
 helmdeploy:
