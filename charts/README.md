@@ -333,3 +333,15 @@ $ helm install --dependency-update test sdp
 
 The `--dependency-update` flag downloads the `tango-base` chart on which the
 `sdp` chart depends.
+
+
+## Releasing the python package
+
+When new release is ready:
+
+  - check out master
+  - update CHANGELOG.md
+  - commit changes
+  - make release-[patch||minor||major]
+
+Note: bumpver needs to be installed
