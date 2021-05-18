@@ -31,23 +31,25 @@ You can watch the deployment in progress using `kubectl`:
 $ kubectl get pod --watch
 ```
 
+or the `k9s` terminal-based UI (recommended):
+
+```console
+$ k9s
+```
 
 You can check the logs of pods to verify that they are doing okay:
 
 ```console
-$ kubectl logs sdp-lmc-subarray-1-0
+$ kubectl logs sdp-lmc-subarray-01-0
 ...
-1|2020-11-04T20:05:03.615Z|INFO|MainThread|init_device|subarray.py#101|SDPSubarray|Initialising SDP Subarray: mid_sdp/elt/subarray_1
+1|2021-05-25T11:32:53.161Z|INFO|MainThread|init_device|subarray.py#92|tango-device:test_sdp/elt/subarray_1|SDP Subarray initialising
 ...
-1|2020-11-04T20:05:03.640Z|INFO|MainThread|init_device|subarray.py#137|SDPSubarray|SDP Subarray initialised: mid_sdp/elt/subarray_1
+1|2021-05-25T11:32:53.185Z|INFO|MainThread|init_device|subarray.py#127|tango-device:test_sdp/elt/subarray_1|SDP Subarray initialised
 ...
 $ kubectl logs sdp-proccontrol-0
-...
-1|2020-11-04T20:04:24.528Z|DEBUG|MainThread|main_loop|processing_controller.py#221||Waiting...
-...
-$ kubectl logs sdp-helmdeploy-0
-...
-1|2020-11-04T20:04:19.989Z|INFO|MainThread|main|ska_sdp_helmdeploy.py#187||Found 0 existing deployments.
+1|2021-05-25T11:32:32.423Z|INFO|MainThread|main_loop|processing_controller.py#180||Connecting to config DB
+1|2021-05-25T11:32:32.455Z|INFO|MainThread|main_loop|processing_controller.py#183||Starting main loop
+1|2021-05-25T11:32:32.566Z|INFO|MainThread|main_loop|processing_controller.py#190||processing block ids []
 ...
 ```
 
@@ -65,17 +67,21 @@ configuration database. You can start a shell in the pod by doing:
 $ kubectl exec -it sdp-console-0 -- bash
 ```
 
-This will allow you to use the `sdpcfg` command:
+This will allow you to use the `ska-sdp` command:
 
 ```console
-# sdpcfg ls -R /
-Keys with / prefix:
+# ska-sdp list -a
+Keys with prefix /:
+/master
 /subarray/01
-/subarray/02
-/subarray/03
+/workflow/batch:batch_imaging:0.1.0
+/workflow/batch:batch_imaging:0.1.1
+/workflow/batch:delivery:0.1.0
+...
 ```
 
-Which shows that the configuration contains the state of the Tango devices.
+Which shows that the configuration contains the state of the Tango devices and
+the workflow definitions.
 
 ### Starting a workflow
 
@@ -83,19 +89,19 @@ Assuming the configuration is prepared as explained in the previous
 section, we can now add a processing block to the configuration:
 
 ```console
-# sdpcfg process batch:test_dask:0.2.2
-OK, pb_id = pb-sdpcfg-20201104-00000
+# ska-sdp create pb batch:test_dask:0.2.2
+OK, pb_id = pb-sdpcli-20210525-00000
 ```
 
 The processing block is created with the `/pb` prefix in the
 configuration:
 
 ```console
-# sdpcfg ls values -R /pb
+# ska-sdp list -v pb
 Keys with /pb prefix:
-/pb/pb-sdpcfg-20201104-00000 = {
+/pb/pb-sdpcli-20210525-00000 = {
   "dependencies": [],
-  "id": "pb-sdpcfg-20201104-00000",
+  "id": "pb-sdpcli-20210525-00000",
   "parameters": {},
   "sbi_id": null,
   "workflow": {
@@ -104,15 +110,15 @@ Keys with /pb prefix:
     "version": "0.2.2"
   }
 }
-/pb/pb-sdpcfg-20201104-00000/owner = {
+/pb/pb-sdpcli-20210525-00000/owner = {
   "command": [
     "test_dask.py",
-    "pb-sdpcfg-20201104-00000"
+    "pb-sdpcli-20210525-00000"
   ],
-  "hostname": "proc-pb-sdpcfg-20201104-00000-workflow-97p8g",
+  "hostname": "proc-pb-sdpcli-20210525-00000-workflow-97p8g",
   "pid": 1
 }
-/pb/pb-sdpcfg-20201104-00000/state = {
+/pb/pb-sdpcli-20210525-00000/state = {
   "resources_available": true,
   "status": "RUNNING"
 }
@@ -125,9 +131,9 @@ with `/deploy` prefix in the configuration, where they are detected by
 the Helm deployer which actually makes the deployments:
 
 ```console
-# sdpcfg ls values -R /deploy
+# ska-sdp list -v deployment
 Keys with /deploy prefix:
-/deploy/proc-pb-sdpcfg-20201104-00000-dask = {
+/deploy/proc-pb-sdpcli-20210525-00000-dask = {
   "args": {
     "chart": "dask/dask",
     "values": {
@@ -137,20 +143,20 @@ Keys with /deploy prefix:
       "worker.replicas": 2
     }
   },
-  "id": "proc-pb-sdpcfg-20201104-00000-dask",
+  "id": "proc-pb-sdpcli-20210525-00000-dask",
   "type": "helm"
 }
-/deploy/proc-pb-sdpcfg-20201104-00000-workflow = {
+/deploy/proc-pb-sdpcli-20210525-00000-workflow = {
   "args": {
     "chart": "workflow",
     "values": {
       "env.SDP_CONFIG_HOST": "sdp-etcd-client.default.svc.cluster.local",
       "env.SDP_HELM_NAMESPACE": "sdp",
-      "pb_id": "pb-sdpcfg-20201104-00000",
+      "pb_id": "pb-sdpcli-20210525-00000",
       "wf_image": "nexus.engageska-portugal.pt/sdp-prototype/workflow-test-dask:0.2.2"
     }
   },
-  "id": "proc-pb-sdpcfg-20201104-00000-workflow",
+  "id": "proc-pb-sdpcli-20210525-00000-workflow",
   "type": "helm"
 }
 ```
@@ -162,10 +168,10 @@ follows (on the host):
 ```console
 $ kubectl get pod -n sdp
 NAME                                                            READY   STATUS    RESTARTS   AGE
-proc-pb-sdpcfg-20201104-00000-dask-scheduler-55c74999f6-tvrtx   1/1     Running   0          52s
-proc-pb-sdpcfg-20201104-00000-dask-worker-677545d9f9-j9ffv      1/1     Running   0          52s
-proc-pb-sdpcfg-20201104-00000-dask-worker-677545d9f9-jphzr      1/1     Running   0          52s
-proc-pb-sdpcfg-20201104-00000-workflow-97p8g                    1/1     Running   0          54s
+proc-pb-sdpcli-20210525-00000-dask-scheduler-55c74999f6-tvrtx   1/1     Running   0          52s
+proc-pb-sdpcli-20210525-00000-dask-worker-677545d9f9-j9ffv      1/1     Running   0          52s
+proc-pb-sdpcli-20210525-00000-dask-worker-677545d9f9-jphzr      1/1     Running   0          52s
+proc-pb-sdpcli-20210525-00000-workflow-97p8g                    1/1     Running   0          54s
 ```
 
 ### Cleaning up
@@ -174,10 +180,10 @@ Finally, let us remove the processing block from the configuration (in the SDP
 console shell):
 
 ```console
-# sdpcfg delete -R /pb/pb-sdpcfg-20201104-00000
-/pb/pb-sdpcfg-20201104-00000
-/pb/pb-sdpcfg-20201104-00000/owner
-/pb/pb-sdpcfg-20201104-00000/state
+# ska-sdp delete pb pb-sdpcli-20210525-00000
+/pb/pb-sdpcli-20210525-00000
+/pb/pb-sdpcli-20210525-00000/owner
+/pb/pb-sdpcli-20210525-00000/state
 OK
 ```
 
@@ -235,7 +241,7 @@ Out[6]: <obsState.EMPTY: 0>
 
 In [7]: config_sbi = '''
     ...: {
-    ...:   "id": "sbi-mvp01-20201104-00000",
+    ...:   "id": "sbi-test-20210525-00000",
     ...:   "max_length": 21600.0,
     ...:   "scan_types": [
     ...:     {
@@ -247,29 +253,29 @@ In [7]: config_sbi = '''
     ...:   ],
     ...:   "processing_blocks": [
     ...:     {
-    ...:       "id": "pb-mvp01-20201104-00000",
+    ...:       "id": "pb-test-20210525-00000",
     ...:       "workflow": {"type": "realtime", "id": "test_realtime", "version": "0.2.1"},
     ...:       "parameters": {}
     ...:     },
     ...:     {
-    ...:       "id": "pb-mvp01-20201104-00001",
+    ...:       "id": "pb-test-20210525-00001",
     ...:       "workflow": {"type": "realtime", "id": "test_realtime", "version": "0.2.1"},
     ...:       "parameters": {}
     ...:     },
     ...:     {
-    ...:       "id": "pb-mvp01-20201104-00002",
+    ...:       "id": "pb-test-20210525-00002",
     ...:       "workflow": {"type": "batch", "id": "test_batch", "version": "0.2.1"},
     ...:       "parameters": {},
     ...:       "dependencies": [
-    ...:         {"pb_id": "pb-mvp01-20201104-00000", "type": ["visibilities"]}
+    ...:         {"pb_id": "pb-test-20210525-00000", "type": ["visibilities"]}
     ...:       ]
     ...:     },
     ...:     {
-    ...:       "id": "pb-mvp01-20201104-00003",
+    ...:       "id": "pb-test-20210525-00003",
     ...:       "workflow": {"type": "batch", "id": "test_batch", "version": "0.2.1"},
     ...:       "parameters": {},
     ...:       "dependencies": [
-    ...:         {"pb_id": "pb-mvp01-20201104-00002", "type": ["calibration"]}
+    ...:         {"pb_id": "pb-test-20210525-00002", "type": ["calibration"]}
     ...:       ]
     ...:     }
     ...:   ]

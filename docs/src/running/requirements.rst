@@ -40,7 +40,7 @@ Alternatively, you may configure this as a default by doing:
 
 .. code-block::
 
-    $ minikube config set memory 4096m
+    $ minikube config set memory 4096
 
 
 Microk8s
@@ -54,3 +54,11 @@ Helm
 
 Helm is available from most typical package managers, see `Introduction to Helm
 <https://helm.sh/docs/intro/>`_.
+
+
+K9s
+---
+
+`K9s <https://k9scli.io>`_ is terminal-based UI for Kubernetes clusters which
+provides a convenient interactive interface. It is not required to run the SDP,
+but it is recommended for its ease of use.
