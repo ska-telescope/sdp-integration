@@ -1,0 +1,20 @@
+[bumpver]
+current_version = "0.4.1"
+version_pattern = "MAJOR.MINOR.PATCH[PYTAGNUM]"
+commit_message = "Release {new_version}"
+commit = true
+tag = true
+push = true
+
+[bumpver.file_patterns]
+"bumpver.toml" = [
+    'current_version = "{version}"',
+]
+"version.txt" = [
+    "{version}"
+]
+"docs/src/conf.py" = [
+    'version = "{version}"',
+    'release = "{version}"'
+]
+
