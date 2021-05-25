@@ -1,0 +1,70 @@
+{{- if .Values.workflows.definitions }}
+---
+# Configmap containing workflow definitions
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sdp.name" . }}-wf-configuration
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp.labels" . | indent 4 }}
+    component: {{ include "sdp.name" . }}-wf-configuration
+    subsystem: enabling-system
+    function: deployment
+    domain: self-configuration
+    intent: enabling
+data:
+  workflows.yaml: |
+    workflows:
+      {{- toYaml .Values.workflows.definitions | nindent 4 }}
+{{- end }}
+---
+# Job to import workflow definitions into the configuration database
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "sdp.name" . }}-wf-configuration
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp.labels" . | indent 4 }}
+    component: {{ include "sdp.name" . }}-wf-configuration
+    subsystem: enabling-system
+    function: deployment
+    domain: self-configuration
+    intent: enabling
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      initContainers:
+      {{- include "sdp.wait-for-etcd" . | nindent 6 }}
+      containers:
+      - name: import-workflows
+        image: {{ .Values.console.image }}:{{ .Values.console.version }}
+        imagePullPolicy: {{ .Values.console.imagePullPolicy }}
+        command:
+          - ska-sdp
+          - import
+          - workflows
+          {{- if .Values.workflows.definitions }}
+          - /data/workflows.yaml
+          {{- else }}
+          - {{ .Values.workflows.url }}
+          {{- end }}
+        env:
+        - name: SDP_CONFIG_HOST
+          value: {{ include "sdp.etcd-host" . }}
+        {{- include "sdp.http-proxy" . | nindent 8 }}
+        {{- if .Values.workflows.definitions }}
+        volumeMounts:
+          - name: configuration
+            mountPath: data
+            readOnly: true
+        {{- end }}
+      {{- if .Values.workflows.definitions }}
+      volumes:
+        - name: configuration
+          configMap:
+            name: {{ include "sdp.name" . }}-wf-configuration
+      {{- end }}
+      restartPolicy: Never

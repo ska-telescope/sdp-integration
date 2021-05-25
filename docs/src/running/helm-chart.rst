@@ -1,9 +1,9 @@
 Helm chart
 ==========
 
-This is a summary of the Helm chart values that can be used the customise the
-SDP deployment. The current default values can be found in the chart's `values
-file`_.
+This is a summary of the Helm chart parameters that can be used the customise
+the SDP deployment. The current default values can be found in the chart's
+`values file`_.
 
 
 Configuration database
@@ -11,97 +11,275 @@ Configuration database
 
 The configuration database is implemented on top of `etcd`_.
 
-========================  =======================  ===========
-Value                     Default                  Description
-========================  =======================  ===========
-``etcd.image``            ``quay.io/coreos/etcd``  etcd image
-``etcd.version``          ``3.3.25``               etcd version
-``etcd.imagePullPolicy``  ``IfNotPresent``         etcd image pull policy
-``etcd.useOperator``      ``false``                Use `etcd-operator`_ to deploy the etcd cluster (deprecated)
-``etcd.maxTxnOps``        ``1024``                 Maximum number of operations per transaction (not supported by etcd-operator)
-========================  =======================  ===========
+.. list-table::
+  :widths: auto
+  :header-rows: 1
+
+  * - Parameter
+    - Description
+    - Default
+  * - ``etcd.image``
+    - etcd container image
+    - ``quay.io/coreos/etcd``
+  * - ``etcd.version``
+    - etcd container version
+    - ``3.3.25``
+  * - ``etcd.imagePullPolicy``
+    - etcd container image pull policy
+    - ``IfNotPresent``
+  * - ``etcd.useOperator``
+    - Use `etcd-operator`_ to deploy the etcd cluster (deprecated)
+    - ``false``
+  * - ``etcd.maxTxnOps``
+    -  Maximum number of operations per transaction (not supported by etcd-operator)
+    - ``1024``
+
+
+Console
+-------
+
+The console provides a command-line interface to monitor and control the SDP by
+interacting with the configuration database.
+
+.. list-table::
+  :widths: auto
+  :header-rows: 1
+
+  * - Parameter
+    - Description
+    - Default
+  * - ``console.enabled``
+    - Enable the console
+    - ``true``
+  * - ``console.image``
+    - Console container image
+    - ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-console``
+  * - ``console.version``
+    - Console container version
+    - See `values file`_
+  * - ``console.imagePullPolicy``
+    - Console container image pull policy
+    - ``IfNotPresent``
+
+
+Operator web interface
+----------------------
+
+The operator web interface can be used to control and monitor the SDP by
+interacting with the configuration database.
+
+.. list-table::
+  :widths: auto
+  :header-rows: 1
+
+  * - Parameter
+    - Description
+    - Default
+  * - ``opinterface.enabled``
+    - Enable the operator web interface
+    - ``true``
+  * - ``opinterface.image``
+    - Operator web interface container image
+    - ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-opinterface``
+  * - ``opinterface.version``
+    - Operator web interface container version
+    - See `values file`_
+  * - ``opinterface.imagePullPolicy``
+    - Operator web interface container image pull policy
+    - ``IfNotPresent``
 
 
 Processing controller
 ---------------------
 
-=================================  ==============================================================================================  ===========
-Value                              Default                                                                                         Description
-=================================  ==============================================================================================  ===========
-``proccontrol.image``              ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-proccontrol``                               Processing controller image
-``proccontrol.version``            (see `values file`_)                                                                            Processing controller version
-``proccontrol.imagePullPolicy``    ``IfNotPresent``                                                                                Processing controller image pull policy
-``proccontrol.workflows.url``      ``https://gitlab.com/ska-telescope/sdp/ska-sdp-science-pipelines/-/raw/master/workflows.json``  Workflow list URL
-``proccontrol.workflows.refresh``  ``300``                                                                                         Workflow list refresh interval (in seconds)
-=================================  ==============================================================================================  ===========
+.. list-table::
+  :widths: auto
+  :header-rows: 1
+
+  * - Parameter
+    - Description
+    - Default
+  * - ``proccontrol.image``
+    - Processing controller container image
+    - ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-proccontrol``
+  * - ``proccontrol.version``
+    - Processing controller container version
+    - See `values file`_
+  * - ``proccontrol.imagePullPolicy``
+    - Processing controller container image pull policy
+    - ``IfNotPresent``
+
+
+Workflows
+---------
+
+Workflow definitions to be used by SDP. These map the workflow type, ID and
+version to a container image. By default the definitions are read from the
+`science pipeline workflows repository`_ in GitLab. A different URL may be
+specified. Alternatively a list of workflow definitions can be passed to the
+chart.
+
+.. list-table::
+  :widths: auto
+  :header-rows: 1
+
+  * - Parameter
+    - Description
+    - Default
+  * - ``workflows.url``
+    - URL from which to read the workflow definitions
+    - ``https://gitlab.com/ska-telescope/sdp/ska-sdp-science-pipelines/-/raw/master/workflows.json``
+  * - ``workflows.definitions``
+    - List of workflow definitions. If present, used instead of the URL. See the example below
+    - Not set
+
+Example of workflow definitions in a values file::
+
+  workflows:
+    definitions:
+    - type: realtime
+      id: test_realtime
+      version: 0.2.2
+      image: nexus.engageska-portugal.pt/sdp-prototype/workflow-test-batch:0.2.2
+    - type: batch
+      id: test_realtime
+      version: 0.2.2
+      image: nexus.engageska-portugal.pt/sdp-prototype/workflow-test-realtime:0.2.2
 
 
 Helm deployer
 -------------
 
-=================================  ===========================================================================================  ===========
-Value                              Default                                                                                      Description
-=================================  ===========================================================================================  ===========
-``helmdeploy.image``               ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-helmdeploy``                             Helm deployer image
-``helmdeploy.version``             (See `values file`_)                                                                         Helm deployer version
-``helmdeploy.imagePullPolicy``     ``IfNotPresent``                                                                             Helm deployer image pull policy
-``helmdeploy.namespace``           ``sdp``                                                                                      Namespace for SDP dynamic deployments
-``helmdeploy.prefix``              ``''``                                                                                       Prefix for Helm release names
-``helmdeploy.createNamespace``     ``false``                                                                                    Create the namespace for dynamic deployments
-``helmdeploy.createClusterRole``   ``false``                                                                                    Create a cluster role to allow dynamic deployments to create persistent volumes
-``helmdeploy.chart_repo.url``      ``https://gitlab.com/ska-telescope/sdp/ska-sdp-helmdeploy-charts/-/raw/master/chart-repo/``  Chart repository URL
-``helmdeploy.chart_repo.refresh``  ``300``                                                                                      Chart repository refresh interval (in seconds)
-=================================  ===========================================================================================  ===========
+.. list-table::
+  :widths: auto
+  :header-rows: 1
+
+  * - Parameter
+    - Description
+    - Default
+  * - ``helmdeploy.image``
+    - Helm deployer container image
+    - ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-helmdeploy``
+  * - ``helmdeploy.version``
+    - Helm deployer container version
+    - See `values file`_
+  * - ``helmdeploy.imagePullPolicy``
+    - Helm deployer container image pull policy
+    - ``IfNotPresent``
+  * - ``helmdeploy.namespace``
+    - Namespace for SDP dynamic deployments
+    - ``sdp``
+  * - ``helmdeploy.prefix``
+    - Prefix for Helm release names
+    - ``''``
+  * - ``helmdeploy.createNamespace``
+    - Create the namespace for dynamic deployments
+    - ``false``
+  * - ``helmdeploy.createClusterRole``
+    - Create a cluster role to allow dynamic deployments to create persistent volumes
+    - ``false``
+  * - ``helmdeploy.chart_repo.url``
+    - Chart repository URL
+    - ``https://gitlab.com/ska-telescope/sdp/ska-sdp-helmdeploy-charts/-/raw/master/chart-repo/``
+  * - ``helmdeploy.chart_repo.refresh``
+    - Chart repository refresh interval (in seconds)
+    - ``300``
 
 
 LMC (Tango devices)
 -------------------
 
-===============================  =========================================================  ===========
-Value                            Default                                                    Description
-===============================  =========================================================  ===========
-``lmc.image``                    ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-lmc``  LMC image
-``lmc.version``                  (see `values file`_)                                       LMC version
-``lmc.imagePullPolicy``          ``IfNotPresent``                                           LMC image pull policy
-``lmc.enabled``                  ``true``                                                   Enable the LMC. If set to false, the SDP will run in headless mode
-``lmc.allCommandsHaveArgument``  ``false``                                                  Enable all Tango device commands to receive a transaction ID
-``lmc.prefix``                   ``test``                                                   Telescope prefix for Tango device names (e.g. ``low`` or ``mid``)
-``lmc.nsubarray``                ``1``                                                      Number of subarrays to deploy
-===============================  =========================================================  ===========
+.. list-table::
+  :widths: auto
+  :header-rows: 1
+
+  * - Parameter
+    - Description
+    - Default
+  * - ``lmc.enabled``
+    - Enable the LMC. If set to ``false``, the SDP will run in headless mode
+    - ``true``
+  * - ``lmc.image``
+    - LMC container image
+    - ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-lmc``
+  * - ``lmc.version``
+    - LMC container version
+    - See `values file`_
+  * - ``lmc.imagePullPolicy``
+    - LMC container image pull policy
+    - ``IfNotPresent``
+  * - ``lmc.allCommandsHaveArgument``
+    - Enable all Tango device commands to receive a transaction ID
+    - ``false``
+  * - ``lmc.prefix``
+    - Telescope prefix for Tango device names (e.g. ``low`` or ``mid``)
+    - ``test``
+  * - ``lmc.nsubarray``
+    - Number of subarrays to deploy
+    - ``1``
 
 
 Tango infrastructure
 --------------------
 
-Values for the tango-base subchart and Tango dsconfig. The tango-base subchart
-needs to be enabled to support the Tango devices when running the SDP
+Parameters for the tango-base subchart and Tango dsconfig. The tango-base
+subchart must be enabled to support the Tango devices when running the SDP
 stand-alone.
 
-=============================  ==========================================  ===========
-Value                          Default                                     Description
-=============================  ==========================================  ===========
-``tango-base.enabled``         ``true``                                    Enable the tango-base subchart
-``dsconfig.image.registry``    ``nexus.engageska-portugal.pt/ska-docker``  Tango dsconfig registry
-``dsconfig.image.image``       ``tango-dsconfig``                          Tango dsconfig image
-``dsconfig.image.tag``         ``1.5.0``                                   Tango dsconfig version
-``dsconfig.image.pullPolicy``  ``IfNotPresent``                            Tango dsconfig image pull policy
-=============================  ==========================================  ===========
+.. list-table::
+  :widths: auto
+  :header-rows: 1
+
+  * - Parameter
+    - Description
+    - Default
+  * - ``tango-base.enabled``
+    - Enable the tango-base subchart
+    - ``true``
+  * - ``dsconfig.image.registry``
+    - Tango dsconfig container registry
+    - ``nexus.engageska-portugal.pt/ska-docker``
+  * - ``dsconfig.image.image``
+    - Tango dsconfig container image
+    - ``tango-dsconfig``
+  * - ``dsconfig.image.tag``
+    - Tango dsconfig container version
+    - ``1.5.0``
+  * - ``dsconfig.image.pullPolicy``
+    - Tango dsconfig container image pull policy
+    - ``IfNotPresent``
 
 
 Proxy settings
 --------------
 
-Proxy settings are applied to the processing controller and Helm deployer,
-which use HTTPS to retrieve the workflow list and Helm charts, respectively.
+Proxy settings are applied to the components that retrive configuration data
+via HTTPS: the workflow definitions and the Helm charts.
 
-=================  =======  ===========
-Value              Default  Description
-=================  =======  ===========
-``proxy.server``   Not set  Address of proxy server
-``proxy.noproxy``  Not set  List of addresses or subnets for which the proxy should not be used
-=================  =======  ===========
+.. list-table::
+  :widths: auto
+  :header-rows: 1
+
+  * - Parameter
+    - Description
+    - Default
+  * - ``proxy.server``
+    - Address of proxy server
+    - Not set
+  * - ``proxy.noproxy``
+    - List of addresses or subnets for which the proxy should not be used
+    - Not set
+
+Example of proxy settings in a values file::
+
+  proxy:
+    server: http://proxy.mydomain
+    noproxy:
+    - 192.168.0.1
+    - 192.168.0.2
 
 
 .. _values file: https://gitlab.com/ska-telescope/sdp/ska-sdp-integration/-/blob/master/charts/sdp/values.yaml
 .. _etcd: https://etcd.io
 .. _etcd-operator: https://github.com/coreos/etcd-operator
+.. _science pipeline workflows repository: https://gitlab.com/ska-telescope/sdp/ska-sdp-science-pipelines
