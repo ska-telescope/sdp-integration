@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.5.0
+
+* Add operator web interface, version 0.2.0.
+* Update console to 0.3.0. This makes the new ska-sdp command-line interface
+  available.
+* Update processing controller to 0.10.0. This reads the workflow definitions
+  from the configuration database.
+* Add Job to import the workflow definitions into the configuration database.
+* Update Helm deployer to 0.9.0. This uses a configuration watcher in the main
+  loop and improves the handling of temporary YAML files.
+* Reduce size of component Docker images by using slim Python base image.
+
 ## 0.4.1
 
 * Update Helm deployer to 0.8.0. Values to pass to a Helm chart are now written
