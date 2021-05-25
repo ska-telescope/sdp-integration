@@ -14,6 +14,7 @@ dsconfig:
 # Parameters for tango-base subchart
 tango-base:
   enabled: true
+  deviceServers: []
 
 # Configuration database
 etcd:

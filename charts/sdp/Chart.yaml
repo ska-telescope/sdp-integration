@@ -12,6 +12,6 @@ maintainers:
   email: maja1@mrao.cam.ac.uk
 dependencies:
 - name: tango-base
-  version: 0.2.16
+  version: 0.2.22
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: tango-base.enabled,global.sub-system.tango-base.enabled
