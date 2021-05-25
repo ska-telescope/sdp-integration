@@ -1,8 +1,8 @@
 apiVersion: v2
 name: sdp
-version: 0.4.1
+version: "0.4.1"
 appVersion: "1.0"
-description: Helm chart to deploy the SDP Prototype
+description: SKA Science Data Processor
 home: https://developer.skatelescope.org/projects/sdp-prototype/
 sources:
 - https://gitlab.com/ska-telescope/sdp-integration

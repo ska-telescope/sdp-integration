@@ -10,11 +10,10 @@ push = true
 "bumpver.toml" = [
     'current_version = "{version}"',
 ]
-"version.txt" = [
-    "{version}"
+"charts/sdp/Chart.yaml" = [
+    'version: "{version}"'
 ]
 "docs/src/conf.py" = [
     'version = "{version}"',
     'release = "{version}"'
 ]
-
