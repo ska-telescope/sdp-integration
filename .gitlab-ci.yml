@@ -24,6 +24,8 @@ lint:
 
 docs:
   stage: test
+  except:
+    - tags
   image: python:latest
   before_script:
     - pip3 install -r docs/requirements.txt
@@ -38,6 +40,8 @@ docs:
 
 .k8s-test:
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+  except:
+    - tags
   tags:
     - k8srunner
   variables:
