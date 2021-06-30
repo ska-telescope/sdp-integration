@@ -164,7 +164,7 @@ def scan_id_expected(subarray_device):
 
     """
     # Get the expected scan ID from the Scan argument
-    scan_id_expected = read_command_argument("Scan")["id"]
+    scan_id_expected = read_command_argument("Scan")["scan_id"]
     assert subarray_device.scanID == scan_id_expected
 
 
@@ -195,9 +195,9 @@ def read_command_argument(name):
 
     if name == "AssignResources":
         # Insert new IDs into configuration
-        config["id"] = create_id("sbi")
+        config["eb_id"] = create_id("eb")
         for pb in config["processing_blocks"]:
-            pb["id"] = create_id("pb")
+            pb["pb_id"] = create_id("pb")
 
     return config
 
