@@ -92,7 +92,7 @@ lmc:
   component: sdp-lmc
   subsystem: execution-control
   image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-lmc
-  version: 0.16.2
+  version: 0.17.1
   imagePullPolicy: IfNotPresent
   enabled: true
   allCommandsHaveArgument: false
