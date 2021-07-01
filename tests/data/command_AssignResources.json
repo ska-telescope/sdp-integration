@@ -1,19 +1,19 @@
 {
-  "interface": "https://schema.skatelescope.org/ska-sdp-assignres/0.2",
-  "id": "sbi-test-20210506-00000",
+  "interface": "https://schema.skao.int/ska-sdp-assignres/0.3",
+  "eb_id": "eb-test-20210630-00000",
   "max_length": 21600.0,
   "scan_types": [
     {
-      "id": "science",
-      "coordinate_system": "ICRS", "ra": "02:42:40.771", "dec": "-00:00:47.84",
+      "scan_type_id": "science",
+      "reference_frame": "ICRS", "ra": "02:42:40.771", "dec": "-00:00:47.84",
       "channels": [
         { "count": 744, "start": 0, "stride": 2, "freq_min": 0.35e9, "freq_max": 0.368e9, "link_map": [[0,0], [200,1], [744,2], [944,3]] },
         { "count": 744, "start": 2000, "stride": 1, "freq_min": 0.36e9, "freq_max": 0.368e9, "link_map": [[2000,4], [2200,5]] }
       ]
     },
     {
-      "id": "calibration",
-      "coordinate_system": "ICRS", "ra": "12:29:06.699", "dec": "02:03:08.598",
+      "scan_type_id": "calibration",
+      "reference_frame": "ICRS", "ra": "12:29:06.699", "dec": "02:03:08.598",
       "channels": [
         { "count": 744, "start": 0, "stride": 2, "freq_min": 0.35e9, "freq_max": 0.368e9, "link_map": [[0,0], [200,1], [744,2], [944,3]] },
         { "count": 744, "start": 2000, "stride": 1, "freq_min": 0.36e9, "freq_max": 0.368e9, "link_map": [[2000,4], [2200,5]] }
@@ -22,8 +22,8 @@
   ],
   "processing_blocks": [
     {
-      "id": "pb-test-20210506-00000",
-      "workflow": {"type": "realtime", "id": "test_receive_addresses", "version": "0.3.3"},
+      "pb_id": "pb-test-20210630-00000",
+      "workflow": {"kind": "realtime", "name": "test_receive_addresses", "version": "0.3.3"},
       "parameters": {}
     }
   ]
