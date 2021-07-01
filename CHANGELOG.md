@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0
+
+* Update LMC to 0.7.1. This adds support for version 0.3 of the command
+  interface schemas. Support for version 0.2 is retained for backwards
+  compatibility.
+
 ## 0.5.0
 
 * Add operator web interface, version 0.2.0.
