@@ -1,6 +1,6 @@
 apiVersion: v2
 name: sdp
-version: "0.6.0"
+version: "0.6.1"
 appVersion: "1.0"
 description: SKA Science Data Processor
 home: https://developer.skatelescope.org/projects/sdp-prototype/
