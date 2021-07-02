@@ -1,8 +1,14 @@
 # Changelog
 
+## 0.6.1
+
+* Update Tango base chart dependency to ska-tango-base 0.2.23.
+* Remove time-to-live settings from configuration jobs so they are not deleted
+  on Kubernetes 1.21.
+
 ## 0.6.0
 
-* Update LMC to 0.7.1. This adds support for version 0.3 of the command
+* Update LMC to 0.17.1. This adds support for version 0.3 of the command
   interface schemas. Support for version 0.2 is retained for backwards
   compatibility.
 
