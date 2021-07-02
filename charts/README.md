@@ -194,16 +194,16 @@ undone as well.
 ## Accessing the Tango interface
 
 By default, the `sdp` chart does not deploy the iTango shell pod from the
-`tango-base` chart. To enable it, you can upgrade the release with:
+`ska-tango-base` chart. To enable it, you can upgrade the release with:
 
 ```console
-helm upgrade test ska/sdp --set tango-base.itango.enabled=true
+helm upgrade test ska/sdp --set ska-tango-base.itango.enabled=true
 ```
 
 Then you can start an iTango session with:
 
 ```console
-$ kubectl exec -it tango-base-itango-console -- itango3
+$ kubectl exec -it ska-tango-base-itango-console -- itango3
 ```
 
 You should be able to list the Tango devices:
@@ -337,7 +337,7 @@ $ cd charts
 $ helm install --dependency-update test sdp
 ```
 
-The `--dependency-update` flag downloads the `tango-base` chart on which the
+The `--dependency-update` flag downloads the `ska-tango-base` chart on which the
 `sdp` chart depends.
 
 

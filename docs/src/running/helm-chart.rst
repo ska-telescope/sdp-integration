@@ -222,9 +222,9 @@ LMC (Tango devices)
 Tango infrastructure
 --------------------
 
-Parameters for the tango-base subchart and Tango dsconfig. The tango-base
-subchart must be enabled to support the Tango devices when running the SDP
-stand-alone.
+Parameters for the ska-tango-base subchart and Tango dsconfig. The
+ska-tango-base subchart must be enabled to support the Tango devices when
+running the SDP stand-alone.
 
 .. list-table::
   :widths: auto
@@ -233,21 +233,15 @@ stand-alone.
   * - Parameter
     - Description
     - Default
-  * - ``tango-base.enabled``
-    - Enable the tango-base subchart
+  * - ``ska-tango-base.enabled``
+    - Enable the ska-tango-base subchart
     - ``true``
-  * - ``dsconfig.image.registry``
-    - Tango dsconfig container registry
-    - ``nexus.engageska-portugal.pt/ska-docker``
-  * - ``dsconfig.image.image``
-    - Tango dsconfig container image
-    - ``tango-dsconfig``
-  * - ``dsconfig.image.tag``
-    - Tango dsconfig container version
-    - ``1.5.0``
-  * - ``dsconfig.image.pullPolicy``
-    - Tango dsconfig container image pull policy
-    - ``IfNotPresent``
+  * - ``ska-tango-base.itango.enabled``
+    - Enable the itango console in the ska-tango-base subchart
+    - ``false``
+  * - ``dsconfig.image.*``
+    - Tango dsconfig container image settings
+    - See `values file`_
 
 
 Proxy settings
