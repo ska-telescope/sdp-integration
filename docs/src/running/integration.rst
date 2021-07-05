@@ -102,7 +102,7 @@ Using the OET Jupyter Notebooks
 """""""""""""""""""""""""""""""
 
 An OET Jupyter Notebook server is automatically deployed when SKAMPI is started. The pod running it
-has the name ```oet-jupyter-test-...``, where ```...`` will be a multi-character string, specific to the deployment.
+has the name ``oet-jupyter-test-...``, where ``...`` will be a multi-character string, specific to the deployment.
 
 The logs of the pod will tell you the web-address where you can access the server:
 
@@ -120,7 +120,7 @@ The output will be similar to:
     [I 22:29:16.114 NotebookApp] http://oet-jupyter-test-5d6f76f9f9-lp5vd:8888/my-skampi/jupyter/
     [I 22:29:16.114 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
 
-In the above example ```my-skampi`` is the namespace in which the pod is running. From this,
+In the above example ``my-skampi`` is the namespace in which the pod is running. From this,
 we can see that the Jupyter Notebook server can be accessed at
 ``http://oet-jupyter-test-5d6f76f9f9-lp5vd:8888/my-skampi/jupyter/``. Depending on where you have
 deployed SKAMPI (e.g. locally, or on a remote machine), you may have to replace
