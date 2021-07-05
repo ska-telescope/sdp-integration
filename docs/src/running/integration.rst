@@ -13,11 +13,11 @@ documentation <https://developer.skatelescope.org/projects/skampi/en/latest/>`_.
 `TODO: this needs exact, better links (probably need to wait for skampi docs to be updated)`
 
 The default namespace into which SKAMPI deploys is ``integration``. You can change this by
-setting the `KUBECONFIG` `KUBE_NAMESPACE_SDP` environment variables before deploying SKAMPI. E.g.
+setting the `KUBE_NAMESPACE` `KUBE_NAMESPACE_SDP` environment variables before deploying SKAMPI. E.g.
 
 .. code-block::
 
-    $ export KUBECONFIG=test-skampi-deployment
+    $ export KUBE_NAMESPACE=test-skampi-deployment
     $ export KUBE_NAMESPACE_SDP=test-skampi-deployment-sdp
 
 If you are deploying on a shared machine, make sure your namespace doesn't clash with existing
@@ -48,7 +48,7 @@ If your deployment doesn't have the `ska-tango-base-itango-console` running, you
 
 .. code-block::
 
-    ska-tango-base:
+    tango-base:
       itango:
         enabled: true
 
