@@ -39,7 +39,6 @@ metadata:
     domain: self-configuration
     intent: enabling
 spec:
-  ttlSecondsAfterFinished: 100
   template:
     spec:
       containers:
