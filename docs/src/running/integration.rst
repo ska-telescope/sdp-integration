@@ -13,7 +13,7 @@ documentation <https://developer.skatelescope.org/projects/skampi/en/latest/>`_.
 `TODO: this needs exact, better links (probably need to wait for skampi docs to be updated)`
 
 The default namespace into which SKAMPI deploys is ``integration``. You can change this by
-setting the `KUBE_NAMESPACE` `KUBE_NAMESPACE_SDP` environment variables before deploying SKAMPI. E.g.
+setting the `KUBE_NAMESPACE` and `KUBE_NAMESPACE_SDP` environment variables before deploying SKAMPI. E.g:
 
 .. code-block::
 
@@ -32,8 +32,8 @@ Interacting with SDP within SKAMPI
 Using the SDP console
 ^^^^^^^^^^^^^^^^^^^^^
 
-Follow the "Testing it out" steps in :ref:`running_standalone`. Remember, that when you want
-to access a pod in your namespace, you will have to specify that namespace. E.g. to start the
+Follow the "Testing it out" steps in :ref:`running_standalone`. Remember to specify the
+namespace in which the pod is running when you want to access one. E.g. to start the
 console pod, run:
 
 .. code-block::
@@ -43,8 +43,8 @@ console pod, run:
 Using the iTango pod
 ^^^^^^^^^^^^^^^^^^^^
 
-If your deployment doesn't have the `ska-tango-base-itango-console` running, you should create a custom
-`values.yml` file and add the following:
+If your deployment doesn't have the `ska-tango-base-itango-console` running, add the following
+to the ```pipeline.yml`` file in the SKAMPI root directory:
 
 .. code-block::
 
@@ -52,7 +52,7 @@ If your deployment doesn't have the `ska-tango-base-itango-console` running, you
       itango:
         enabled: true
 
-And then upgrade your SKAMPI installation via its Makefile (``make upgrade-chart ..``) or
+And then upgrade your SKAMPI installation via its Makefile (``make upgrade-chart VALUES=pipeline.yml``) or
 using ``helm upgrade ..``.
 
 Once you have a running iTango console, follow the steps to test it out
@@ -85,7 +85,7 @@ The webserver running in this pod can be accessed via a web link of the followin
     http://<ingress_host>/<namespace>/jupyter
 
 ``<namespace>`` is the `KUBE_NAMESPACE`, while the ``<ingress_host>`` is either an environment variable
-called ``INGRESS_HOST``, or the default one can be found in the `Makefile` of SKAMPI under the same variable name.
+called `INGRESS_HOST`, or the default one can be found in the `Makefile` of SKAMPI under the same variable name.
 You can also find this value by running this command:
 
 .. code-block::
@@ -94,15 +94,12 @@ You can also find this value by running this command:
 
 Depending on how you access the website (i.e. with port forwarding or directly), you may need to
 replace the ``<ingress_host>`` with your localhost or similar.
-
 More information on how to access the Notebooks on SKAMPI (including the required password) can be found in the
 `OET docs <https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/oet_with_skampi.html#accessing-jupyter-on-skampi>`_.
 
 You can access the existing Notebooks in `scripts/notebooks`. Based on these examples,
 you may also `create your own <https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/oet_with_skampi.html>`_
-version of an SKA control Notebook.
-
-You may also use the OET scripts as a starting point for your own development. For example,
+version of an SKA control Notebook. You may also use the OET scripts as a starting point for your own development. For example,
 the steps in the script at `Control using static JSON <https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/writing_control_scripts_without_sbs.html#control-using-static-json>`_
 can be copy-pasted into a Jupyter Notebook. You will need to specify a JSON file, which contains the necessary
 configuration string to control the subarray device and hence, SDP.
