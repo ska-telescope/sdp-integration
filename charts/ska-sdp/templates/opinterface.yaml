@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "sdp.name" . }}-opinterface
+  name: {{ include "ska-sdp.name" . }}-opinterface
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.opinterface.component }}
     subsystem: {{ .Values.opinterface.subsystem }}
     function: {{ .Values.opinterface.function }}
@@ -24,10 +24,10 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "sdp.name" . }}-opinterface
+  name: {{ include "ska-sdp.name" . }}-opinterface
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.opinterface.component }}
     subsystem: {{ .Values.opinterface.subsystem }}
     function: {{ .Values.opinterface.function }}
@@ -39,11 +39,11 @@ spec:
     matchLabels:
       component: {{ .Values.opinterface.component }}
       subsystem: {{ .Values.opinterface.subsystem }}
-  serviceName: {{ include "sdp.name" . }}-opinterface
+  serviceName: {{ include "ska-sdp.name" . }}-opinterface
   template:
     metadata:
       labels:
-        {{- include "sdp.labels" . | indent 8 }}
+        {{- include "ska-sdp.labels" . | indent 8 }}
         component: {{ .Values.opinterface.component }}
         subsystem: {{ .Values.opinterface.subsystem }}
         function: {{ .Values.opinterface.function }}
@@ -51,12 +51,12 @@ spec:
         intent: production
     spec:
       initContainers:
-      {{- include "sdp.wait-for-etcd" . | nindent 6 }}
+      {{- include "ska-sdp.wait-for-etcd" . | nindent 6 }}
       containers:
       - name: opinterface
         image: {{ .Values.opinterface.image }}:{{ .Values.opinterface.version }}
         imagePullPolicy: {{ .Values.opinterface.imagePullPolicy }}
         env:
         - name: SDP_CONFIG_HOST
-          value: {{ include "sdp.etcd-host" . }}
+          value: {{ include "ska-sdp.etcd-host" . }}
 {{- end }}

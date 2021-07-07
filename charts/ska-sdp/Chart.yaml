@@ -1,11 +1,11 @@
 apiVersion: v2
-name: sdp
+name: ska-sdp
 version: "0.6.1"
 appVersion: "1.0"
 description: SKA Science Data Processor
-home: https://developer.skatelescope.org/projects/sdp-prototype/
+home: https://developer.skao.int/projects/ska-sdp-integration/
 sources:
-- https://gitlab.com/ska-telescope/sdp-integration
+- https://gitlab.com/ska-telescope/sdp/ska-sdp-integration
 icon: http://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 maintainers:
 - name: Mark Ashdown
@@ -14,4 +14,4 @@ dependencies:
 - name: ska-tango-base
   version: 0.2.23
   repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-tango-base.enabled,global.sub-system.tango-base.enabled
+  condition: ska-tango-base.enabled,global.sub-system.ska-tango-base.enabled

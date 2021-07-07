@@ -10,7 +10,7 @@ push = true
 "bumpver.toml" = [
     'current_version = "{version}"',
 ]
-"charts/sdp/Chart.yaml" = [
+"charts/ska-sdp/Chart.yaml" = [
     'version: "{version}"'
 ]
 "docs/src/conf.py" = [

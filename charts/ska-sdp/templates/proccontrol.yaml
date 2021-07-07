@@ -3,10 +3,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "sdp.name" . }}-proccontrol
+  name: {{ include "ska-sdp.name" . }}-proccontrol
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.proccontrol.component }}
     subsystem: {{ .Values.proccontrol.subsystem }}
     function: {{ .Values.proccontrol.function }}
@@ -21,10 +21,10 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "sdp.name" . }}-proccontrol
+  name: {{ include "ska-sdp.name" . }}-proccontrol
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.proccontrol.component }}
     subsystem: {{ .Values.proccontrol.subsystem }}
     function: {{ .Values.proccontrol.function }}
@@ -36,11 +36,11 @@ spec:
     matchLabels:
       component: {{ .Values.proccontrol.component }}
       subsystem: {{ .Values.proccontrol.subsystem }}
-  serviceName: {{ include "sdp.name" . }}-proccontrol
+  serviceName: {{ include "ska-sdp.name" . }}-proccontrol
   template:
     metadata:
       labels:
-        {{- include "sdp.labels" . | indent 8 }}
+        {{- include "ska-sdp.labels" . | indent 8 }}
         component: {{ .Values.proccontrol.component }}
         subsystem: {{ .Values.proccontrol.subsystem }}
         function: {{ .Values.proccontrol.function }}
@@ -48,13 +48,13 @@ spec:
         intent: production
     spec:
       initContainers:
-      {{- include "sdp.wait-for-etcd" . | nindent 6 }}
+      {{- include "ska-sdp.wait-for-etcd" . | nindent 6 }}
       containers:
       - name: proccontrol
         image: {{ .Values.proccontrol.image }}:{{ .Values.proccontrol.version }}
         imagePullPolicy: {{ .Values.proccontrol.imagePullPolicy }}
         env:
         - name: SDP_CONFIG_HOST
-          value: {{ include "sdp.etcd-host" . }}
+          value: {{ include "ska-sdp.etcd-host" . }}
         - name: SDP_HELM_NAMESPACE
           value: {{ quote .Values.helmdeploy.namespace }}

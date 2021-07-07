@@ -4,11 +4,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "sdp.name" . }}-wf-configuration
+  name: {{ include "ska-sdp.name" . }}-wf-configuration
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
-    component: {{ include "sdp.name" . }}-wf-configuration
+    {{- include "ska-sdp.labels" . | indent 4 }}
+    component: {{ include "ska-sdp.name" . }}-wf-configuration
     subsystem: enabling-system
     function: deployment
     domain: self-configuration
@@ -23,11 +23,11 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "sdp.name" . }}-wf-configuration
+  name: {{ include "ska-sdp.name" . }}-wf-configuration
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
-    component: {{ include "sdp.name" . }}-wf-configuration
+    {{- include "ska-sdp.labels" . | indent 4 }}
+    component: {{ include "ska-sdp.name" . }}-wf-configuration
     subsystem: enabling-system
     function: deployment
     domain: self-configuration
@@ -36,7 +36,7 @@ spec:
   template:
     spec:
       initContainers:
-      {{- include "sdp.wait-for-etcd" . | nindent 6 }}
+      {{- include "ska-sdp.wait-for-etcd" . | nindent 6 }}
       containers:
       - name: import-workflows
         image: {{ .Values.console.image }}:{{ .Values.console.version }}
@@ -52,8 +52,8 @@ spec:
           {{- end }}
         env:
         - name: SDP_CONFIG_HOST
-          value: {{ include "sdp.etcd-host" . }}
-        {{- include "sdp.http-proxy" . | nindent 8 }}
+          value: {{ include "ska-sdp.etcd-host" . }}
+        {{- include "ska-sdp.http-proxy" . | nindent 8 }}
         {{- if .Values.workflows.definitions }}
         volumeMounts:
           - name: configuration
@@ -64,6 +64,6 @@ spec:
       volumes:
         - name: configuration
           configMap:
-            name: {{ include "sdp.name" . }}-wf-configuration
+            name: {{ include "ska-sdp.name" . }}-wf-configuration
       {{- end }}
       restartPolicy: Never

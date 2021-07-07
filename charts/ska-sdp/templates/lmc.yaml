@@ -10,7 +10,7 @@
 {{- $args := list $instance "-v4" }}
 {{- $_ := set $servers "SDPMaster" (dict $instance (dict "SDPMaster" (dict $tangoname $tangoconfig))) }}
 {{- $device := dict "name" $name "tangoname" $tangoname "command" $command "args" $args "domain" .Values.lmc.master.domain "function" .Values.lmc.master.function }}
-{{- include "sdp.lmc-device" (dict "device" $device "tangohost" $tangohost "root" .) }}
+{{- include "ska-sdp.lmc-device" (dict "device" $device "tangohost" $tangohost "root" .) }}
 {{- /* Subarrays */}}
 {{- $subarrays := dict }}
 {{- range $i := until (int .Values.lmc.nsubarray) }}
@@ -23,9 +23,9 @@
 {{- $args := list $instance "-v4" }}
 {{- $_ := set $subarrays $instance (dict "SDPSubarray" (dict $tangoname $tangoconfig)) }}
 {{- $device := dict "name" $name "tangoname" $tangoname "command" $command "args" $args "domain" $.Values.lmc.subarray.domain "function" $.Values.lmc.subarray.function }}
-{{- include "sdp.lmc-device" (dict "device" $device "tangohost" $tangohost "root" $) }}
+{{- include "ska-sdp.lmc-device" (dict "device" $device "tangohost" $tangohost "root" $) }}
 {{- end }}
 {{- $_ := set $servers "SDPSubarray" $subarrays }}
 {{- $config := dict "servers" $servers }}
-{{- include "sdp.lmc-config" (dict "config" $config "tangohost" $tangohost "root" .) }}
+{{- include "ska-sdp.lmc-config" (dict "config" $config "tangohost" $tangohost "root" .) }}
 {{- end }}

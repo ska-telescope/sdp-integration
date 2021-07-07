@@ -273,7 +273,7 @@ Example of proxy settings in a values file::
     - 192.168.0.2
 
 
-.. _values file: https://gitlab.com/ska-telescope/sdp/ska-sdp-integration/-/blob/master/charts/sdp/values.yaml
+.. _values file: https://gitlab.com/ska-telescope/sdp/ska-sdp-integration/-/blob/master/charts/ska-sdp/values.yaml
 .. _etcd: https://etcd.io
 .. _etcd-operator: https://github.com/coreos/etcd-operator
 .. _science pipeline workflows repository: https://gitlab.com/ska-telescope/sdp/ska-sdp-science-pipelines

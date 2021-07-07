@@ -3,10 +3,10 @@
 apiVersion: "etcd.database.coreos.com/v1beta2"
 kind: "EtcdCluster"
 metadata:
-  name: {{ include "sdp.name" . }}-etcd
+  name: {{ include "ska-sdp.name" . }}-etcd
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.etcd.component }}
     subsystem: {{ .Values.etcd.subsystem }}
     function: {{ .Values.etcd.function }}
@@ -18,7 +18,7 @@ spec:
   size: {{ .Values.etcd.replicas }}
   pod:
     annotations:
-      {{- include "sdp.labels" . | indent 6 }}
+      {{- include "ska-sdp.labels" . | indent 6 }}
       component: {{ .Values.etcd.component }}
       subsystem: {{ .Values.etcd.subsystem }}
       function: {{ .Values.etcd.function }}
@@ -31,10 +31,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "sdp.name" . }}-etcd
+  name: {{ include "ska-sdp.name" . }}-etcd
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.etcd.component }}
     subsystem: {{ .Values.etcd.subsystem }}
     function: {{ .Values.etcd.function }}
@@ -56,10 +56,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "sdp.name" . }}-etcd-client
+  name: {{ include "ska-sdp.name" . }}-etcd-client
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.etcd.component }}
     subsystem: {{ .Values.etcd.subsystem }}
     function: {{ .Values.etcd.function }}
@@ -77,10 +77,10 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "sdp.name" . }}-etcd
+  name: {{ include "ska-sdp.name" . }}-etcd
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.etcd.component }}
     subsystem: {{ .Values.etcd.subsystem }}
     function: {{ .Values.etcd.function }}
@@ -92,11 +92,11 @@ spec:
     matchLabels:
       component: {{ .Values.etcd.component }}
       subsystem: {{ .Values.etcd.subsystem }}
-  serviceName: {{ include "sdp.name" . }}-etcd
+  serviceName: {{ include "ska-sdp.name" . }}-etcd
   template:
     metadata:
       labels:
-        {{- include "sdp.labels" . | indent 8 }}
+        {{- include "ska-sdp.labels" . | indent 8 }}
         component: {{ .Values.etcd.component }}
         subsystem: {{ .Values.etcd.subsystem }}
         function: {{ .Values.etcd.function }}
@@ -111,7 +111,7 @@ spec:
         - etcd
         env:
         - name: ETCD_NAME
-          value: {{ include "sdp.name" . }}-etcd
+          value: {{ include "ska-sdp.name" . }}-etcd
         - name: ETCD_LISTEN_PEER_URLS
           value: http://0.0.0.0:2380
         - name: ETCD_LISTEN_CLIENT_URLS
@@ -121,15 +121,15 @@ spec:
         - name: ETCD_ADVERTISE_CLIENT_URLS
           value: http://0.0.0.0:2379
         - name: ETCD_INITIAL_CLUSTER
-          value: {{ include "sdp.name" . }}-etcd=http://0.0.0.0:2380
+          value: {{ include "ska-sdp.name" . }}-etcd=http://0.0.0.0:2380
         - name: ETCD_DATA_DIR
           value: /var/etcd/data
         - name: ETCD_MAX_TXN_OPS
           value: {{ quote .Values.etcd.maxTxnOps }}
         volumeMounts:
-        - name: {{ include "sdp.name" . }}-etcd-data
+        - name: {{ include "ska-sdp.name" . }}-etcd-data
           mountPath: /var/etcd
       volumes:
-      - name: {{ include "sdp.name" . }}-etcd-data
+      - name: {{ include "ska-sdp.name" . }}-etcd-data
         emptyDir: {}
 {{- end }}

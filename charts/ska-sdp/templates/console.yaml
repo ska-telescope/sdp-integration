@@ -3,10 +3,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "sdp.name" . }}-console
+  name: {{ include "ska-sdp.name" . }}-console
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.console.component }}
     subsystem: {{ .Values.console.subsystem }}
     function: {{ .Values.console.function }}
@@ -21,10 +21,10 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "sdp.name" . }}-console
+  name: {{ include "ska-sdp.name" . }}-console
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.console.component }}
     subsystem: {{ .Values.console.subsystem }}
     function: {{ .Values.console.function }}
@@ -36,11 +36,11 @@ spec:
     matchLabels:
       component: {{ .Values.console.component }}
       subsystem: {{ .Values.console.subsystem }}
-  serviceName: {{ include "sdp.name" . }}-console
+  serviceName: {{ include "ska-sdp.name" . }}-console
   template:
     metadata:
       labels:
-        {{- include "sdp.labels" . | indent 8 }}
+        {{- include "ska-sdp.labels" . | indent 8 }}
         component: {{ .Values.console.component }}
         subsystem: {{ .Values.console.subsystem }}
         function: {{ .Values.console.function }}
@@ -48,15 +48,15 @@ spec:
         intent: production
     spec:
       initContainers:
-      {{- include "sdp.wait-for-etcd" . | nindent 6 }}
+      {{- include "ska-sdp.wait-for-etcd" . | nindent 6 }}
       containers:
       - name: console
         image: {{ .Values.console.image }}:{{ .Values.console.version }}
         imagePullPolicy: {{ .Values.console.imagePullPolicy }}
         env:
         - name: SDP_CONFIG_HOST
-          value: {{ include "sdp.etcd-host" . }}
+          value: {{ include "ska-sdp.etcd-host" . }}
         - name: SDP_HELM_NAMESPACE
           value: {{ quote .Values.helmdeploy.namespace }}
-      serviceAccountName: {{ include "sdp.name" . }}-helm
+      serviceAccountName: {{ include "ska-sdp.name" . }}-helm
 {{- end }}

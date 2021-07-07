@@ -5,16 +5,16 @@ This template should be called with a context containing:
   - tangohost: the location of the Tango DB
   - root: the root context of the chart
 */}}
-{{- define "sdp.lmc-config" }}
+{{- define "ska-sdp.lmc-config" }}
 ---
 # Configmap containing device server configuration
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "sdp.name" .root }}-lmc-configuration
+  name: {{ include "ska-sdp.name" .root }}-lmc-configuration
   namespace: {{ .root.Release.Namespace }}
   labels:
-    {{- include "sdp.labels" .root | indent 4 }}
+    {{- include "ska-sdp.labels" .root | indent 4 }}
     component: {{ .root.Values.lmc.component }}-configuration
     subsystem: enabling-system
     function: deployment
@@ -29,10 +29,10 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "sdp.name" .root }}-lmc-configuration
+  name: {{ include "ska-sdp.name" .root }}-lmc-configuration
   namespace: {{ .root.Release.Namespace }}
   labels:
-    {{- include "sdp.labels" .root | indent 4 }}
+    {{- include "ska-sdp.labels" .root | indent 4 }}
     component: {{ .root.Values.lmc.component }}-configuration
     subsystem: enabling-system
     function: deployment
@@ -63,7 +63,7 @@ spec:
       volumes:
         - name: configuration
           configMap:
-            name: {{ include "sdp.name" .root }}-lmc-configuration
+            name: {{ include "ska-sdp.name" .root }}-lmc-configuration
       restartPolicy: Never
 {{- end}}
 
@@ -80,16 +80,16 @@ This template should be called with a context containing:
   - tangohost: location of the Tango DB
   - root: the root context of the chart
 */}}
-{{- define "sdp.lmc-device" }}
+{{- define "ska-sdp.lmc-device" }}
 ---
 # Dummy Service to ensure Pod is DNS addressable
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "sdp.name" .root }}-lmc-{{ .device.name }}
+  name: {{ include "ska-sdp.name" .root }}-lmc-{{ .device.name }}
   namespace: {{ .root.Release.Namespace }}
   labels:
-    {{- include "sdp.labels" .root | indent 4 }}
+    {{- include "ska-sdp.labels" .root | indent 4 }}
     component: {{ .root.Values.lmc.component }}-{{ .device.name }}
     subsystem: {{ .root.Values.lmc.subsystem }}
     function: {{ .device.function }}
@@ -105,10 +105,10 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "sdp.name" .root }}-lmc-{{ .device.name }}
+  name: {{ include "ska-sdp.name" .root }}-lmc-{{ .device.name }}
   namespace: {{ .root.Release.Namespace }}
   labels:
-    {{- include "sdp.labels" .root | indent 4 }}
+    {{- include "ska-sdp.labels" .root | indent 4 }}
     component: {{ .root.Values.lmc.component }}-{{ .device.name }}
     subsystem: {{ .root.Values.lmc.subsystem }}
     function: {{ .device.function }}
@@ -119,12 +119,12 @@ spec:
     matchLabels:
       component: {{ .root.Values.lmc.component }}-{{ .device.name }}
       subsystem: {{ .root.Values.lmc.subsystem }}
-  serviceName: {{ include "sdp.name" .root }}-lmc-{{ .device.name }}
+  serviceName: {{ include "ska-sdp.name" .root }}-lmc-{{ .device.name }}
   replicas: 1
   template:
     metadata:
       labels:
-        {{- include "sdp.labels" .root | indent 8 }}
+        {{- include "ska-sdp.labels" .root | indent 8 }}
         component: {{ .root.Values.lmc.component }}-{{ .device.name }}
         subsystem: {{ .root.Values.lmc.subsystem }}
         function: {{ .device.function }}
@@ -132,7 +132,7 @@ spec:
         intent: production
     spec:
       initContainers:
-      {{- include "sdp.wait-for-etcd" .root | nindent 6 }}
+      {{- include "ska-sdp.wait-for-etcd" .root | nindent 6 }}
       - name: wait-for-device-config
         image: {{ .root.Values.dsconfig.image.registry }}/{{ .root.Values.dsconfig.image.image }}:{{ .root.Values.dsconfig.image.tag }}
         imagePullPolicy: {{ .root.Values.dsconfig.image.pullPolicy }}
@@ -154,7 +154,7 @@ spec:
         args: {{ toJson .device.args}}
         env:
         - name: SDP_CONFIG_HOST
-          value: {{ include "sdp.etcd-host" .root }}
+          value: {{ include "ska-sdp.etcd-host" .root }}
         - name: TANGO_HOST
           value: {{ .tangohost }}
         - name: FEATURE_ALL_COMMANDS_HAVE_ARGUMENT
