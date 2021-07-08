@@ -318,6 +318,9 @@ In [21]: d.state()
 Out[21]: tango._tango.DevState.OFF
 ```
 
+More details about the SDP Subarray commands can be found `here
+<https://developer.skao.int/projects/ska-sdp-lmc/en/latest/sdp_subarray.html>`_
+
 ## Removing the SDP
 
 To remove the SDP deployment from the cluster, do:
@@ -328,9 +331,9 @@ $ helm uninstall test
 
 ## Developing the SDP chart
 
-If you want to install the chart from the source code in the SDP Integration
-repository, for instance if you are developing a new version, then you can do
-it like this:
+If you want to install the chart from the source code in the`SDP Integration repository 
+<https://developer.skao.int/projects/ska-sdp-lmc/en/latest/sdp_subarray.html>`_, 
+for instance if you are developing a new version, then you can do it like this:
 
 ```console
 $ cd charts
@@ -340,6 +343,11 @@ $ helm install --dependency-update test sdp
 The `--dependency-update` flag downloads the `ska-tango-base` chart on which the
 `sdp` chart depends.
 
+## Developing SDP Workflows
+
+Instructions on how to develop and test SDP workflows can be found in the
+`Science Pipeline Workflows 
+<https://developer.skao.int/projects/ska-sdp-lmc/en/latest/sdp_subarray.html>`_ documentation.
 
 ## Releasing the python package
 
@@ -351,3 +359,5 @@ When new release is ready:
   - make release-[patch||minor||major]
 
 Note: bumpver needs to be installed
+
+
