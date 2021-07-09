@@ -1,5 +1,8 @@
 # Running the SDP stand-alone
 
+Before proceeding run the SDP, local development environment needs to be set up. 
+Details can be found at the [requirements](/SKA/docs/build/html/running/requirements.html) page.
+
 ## Create the namespace for SDP workflows
 
 The SDP deploys its workflows and their execution engines into a separate
@@ -37,10 +40,32 @@ or the `k9s` terminal-based UI (recommended):
 $ k9s
 ```
 
+Wait until all the pods are running:
+
+```console
+ default      databaseds-tango-base-test-0  ●  1/1          0 Running    172.17.0.12     m01   119s
+ default      sdp-console-0                 ●  1/1          0 Running    172.17.0.15     m01   119s
+ default      sdp-etcd-0                    ●  1/1          0 Running    172.17.0.6      m01   119s
+ default      sdp-helmdeploy-0              ●  1/1          0 Running    172.17.0.14     m01   119s
+ default      sdp-lmc-configuration-6vbtr   ●  0/1          0 Completed  172.17.0.11     m01   119s
+ default      sdp-lmc-master-0              ●  1/1          0 Running    172.17.0.9      m01   119s 
+ default      sdp-lmc-subarray-01-0         ●  1/1          0 Running    172.17.0.10     m01   119s 
+ default      sdp-opinterface-0             ●  1/1          0 Running    172.17.0.13     m01   119s  
+ default      sdp-proccontrol-0             ●  1/1          0 Running    172.17.0.4      m01   119s  
+ default      sdp-wf-configuration-2hpdn    ●  0/1          0 Completed  172.17.0.5      m01   119s
+ default      ska-tango-base-tangodb-0      ●  1/1          0 Running    172.17.0.8      m01   119s
+```
+
 You can check the logs of pods to verify that they are doing okay:
 
 ```console
-$ kubectl logs sdp-lmc-subarray-01-0
+kubectl logs <pod_name>
+```
+
+For example:
+
+```console
+$ kubectl logs sdp-lmc-subarray-01-0 
 ...
 1|2021-05-25T11:32:53.161Z|INFO|MainThread|init_device|subarray.py#92|tango-device:test_sdp/elt/subarray_1|SDP Subarray initialising
 ...
@@ -83,15 +108,30 @@ Keys with prefix /:
 Which shows that the configuration contains the state of the Tango devices and
 the workflow definitions.
 
+Details about the existing commands of the `ska-sdp` utility can be found in the 
+`CLI to interact with SDP <https://developer.skao.int/projects/ska-sdp-config/en/latest/cli.html>`_ 
+section in the SDP Configuration Library documentation. 
+
 ### Starting a workflow
 
 Assuming the configuration is prepared as explained in the previous
 section, we can now add a processing block to the configuration:
 
 ```console
-# ska-sdp create pb batch:test_dask:0.2.2
+ska-sdp create pb <workflow_type>:<workflow_id>:<workflow_version>
+```
+
+For example
+
+```console
+# ska-sdp create pb batch:test_dask:0.2.5
 OK, pb_id = pb-sdpcli-20210525-00000
 ```
+
+Note - `ska-sdp` utility only has the option to create a PB with batch workflow.
+Realtime workflow is linked to a Scheduling Block Instance (SBI). Currently, there 
+is no option to create a PB and link it to SBI using the `ska-sdp` utility. 
+Therefore, a PB with realtime workflow can only be created using the iTango interface.
 
 The processing block is created with the `/pb` prefix in the
 configuration:
@@ -212,21 +252,19 @@ You should be able to list the Tango devices:
 In [1]: lsdev
 Device                                   Alias                     Server                    Class
 ---------------------------------------- ------------------------- ------------------------- --------------------
-mid_sdp/elt/master                                                 SDPMaster/1               SDPMaster
-mid_sdp/elt/subarray_1                                             SDPSubarray/1             SDPSubarray
-mid_sdp/elt/subarray_2                                             SDPSubarray/2             SDPSubarray
-mid_sdp/elt/subarray_3                                             SDPSubarray/3             SDPSubarray
-sys/access_control/1                                               TangoAccessControl/1      TangoAccessControl
-sys/database/2                                                     DataBaseds/2              DataBase
-sys/rest/0                                                         TangoRestServer/rest      TangoRestServer
+test_sdp/elt/master                                                SDPMaster/0               SDPMaster           
+test_sdp/elt/subarray_1                                            SDPSubarray/01            SDPSubarray  
+sys/access_control/1                                               TangoAccessControl/1      TangoAccessControl  
+sys/database/2                                                     DataBaseds/2              DataBase            
+sys/rest/0                                                         TangoRestServer/rest      TangoRestServer     
 sys/tg_test/1                                                      TangoTest/test            TangoTest
 ```
 
-This allows direct interaction with the devices, such as querying and
-and changing attributes and issuing commands:
+This allows direct interaction with the devices, such as querying and 
+changing attributes and issuing commands:
 
 ```python
-In [2]: d = DeviceProxy('mid_sdp/elt/subarray_1')
+In [2]: d = DeviceProxy('test_sdp/elt/subarray_1')
 
 In [3]: d.state()
 Out[3]: tango._tango.DevState.OFF
@@ -247,24 +285,24 @@ In [7]: config_sbi = '''
     ...:     {
     ...:       "id": "science",
     ...:       "channels": [
-    ...:         {"count": 372, "start": 0, "stride": 2, "freq_min": 0.35e9, "freq_max": 0.358e9, "link_map": [[0,0], [200,1]]}
+    ...:         {"count": 5, "start": 0, "stride": 2, "freq_min": 0.35e9, "freq_max": 0.358e9, "link_map": [[0,0], [200,1]]}
     ...:       ]
     ...:     }
     ...:   ],
     ...:   "processing_blocks": [
     ...:     {
     ...:       "id": "pb-test-20210525-00000",
-    ...:       "workflow": {"type": "realtime", "id": "test_realtime", "version": "0.2.1"},
+    ...:       "workflow": {"type": "realtime", "id": "test_realtime", "version": "0.2.4"},
     ...:       "parameters": {}
     ...:     },
     ...:     {
     ...:       "id": "pb-test-20210525-00001",
-    ...:       "workflow": {"type": "realtime", "id": "test_realtime", "version": "0.2.1"},
+    ...:       "workflow": {"type": "realtime", "id": "test_receive_addresses", "version": "0.3.6"},
     ...:       "parameters": {}
     ...:     },
     ...:     {
     ...:       "id": "pb-test-20210525-00002",
-    ...:       "workflow": {"type": "batch", "id": "test_batch", "version": "0.2.1"},
+    ...:       "workflow": {"type": "batch", "id": "test_batch", "version": "0.2.4"},
     ...:       "parameters": {},
     ...:       "dependencies": [
     ...:         {"pb_id": "pb-test-20210525-00000", "type": ["visibilities"]}
@@ -272,7 +310,7 @@ In [7]: config_sbi = '''
     ...:     },
     ...:     {
     ...:       "id": "pb-test-20210525-00003",
-    ...:       "workflow": {"type": "batch", "id": "test_batch", "version": "0.2.1"},
+    ...:       "workflow": {"type": "batch", "id": "test_dask", "version": "0.2.5"},
     ...:       "parameters": {},
     ...:       "dependencies": [
     ...:         {"pb_id": "pb-test-20210525-00002", "type": ["calibration"]}
@@ -318,7 +356,7 @@ In [21]: d.state()
 Out[21]: tango._tango.DevState.OFF
 ```
 
-More details about the SDP Subarray commands can be found `here
+More details about each of the SDP Subarray commands can be found `here
 <https://developer.skao.int/projects/ska-sdp-lmc/en/latest/sdp_subarray.html>`_
 
 ## Removing the SDP
