@@ -10,8 +10,8 @@ Kubernetes
 ----------
 
 There are a number of way to install and run Kubernetes in your development
-environment. Depending on the operating system, choose either Docker Desktop,
-Minikube (recommended) or Microk8s.
+environment. There are many ways of doing this, including Docker Desktop,
+Minikube (recommended) and microk8s.
 
 Docker Desktop
 ^^^^^^^^^^^^^^
@@ -30,8 +30,13 @@ different `drivers <https://minikube.sigs.k8s.io/docs/drivers/>`_ to run
 Kubernetes in a virtual machine or container. On Windows, the Hyper-V
 hypervisor can be enabled in the settings, after which a reboot is required.
 
-Depending on the machine increase or decrease the amount of memory that the Minikube VM uses, you can
-specify it on the command line when starting a new instance, for example:
+Minikube can be started with the default configurations by doing:
+
+.. code-block::
+
+    $ minikube start
+
+If you need to increase the amount of memory that the Minikube VM uses, you can:
 
 .. code-block::
 
@@ -43,7 +48,9 @@ Alternatively, you may configure this as a default by doing:
 
     $ minikube config set memory 4096
 
-To use minikube's Docker daemon, configure environment by doing:
+If you are developing SDP components and you would like to build and test them
+in Minikube, you need to configure Docker to use the daemon inside the VM.
+This can be done by setting the environment variables:
 
 .. code-block::
 
@@ -59,14 +66,14 @@ Canonical supports `microk8s <https://microk8s.io>`_ for Linux, macOS and
 Windows.
 
 Helm
-^^^^^
+----
 
 Helm is available from most typical package managers, see `Introduction to Helm
 <https://helm.sh/docs/intro/>`_.
 
 
 K9s
-^^^
+---
 
 `K9s <https://k9scli.io>`_ is terminal-based UI for Kubernetes clusters which
 provides a convenient interactive interface. It is not required to run the SDP,
@@ -74,7 +81,7 @@ but it is recommended for its ease of use.
 
 
 Commands Help Guide
-^^^^^^^^^^^^^^^^^^^
+-------------------
 
 Here are a list of key commands for Docker:
 

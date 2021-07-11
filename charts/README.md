@@ -128,10 +128,10 @@ For example
 OK, pb_id = pb-sdpcli-20210525-00000
 ```
 
-Note - `ska-sdp` utility only has the option to create a PB with batch workflow.
-Realtime workflow is linked to a Scheduling Block Instance (SBI). Currently, there 
-is no option to create a PB and link it to SBI using the `ska-sdp` utility. 
-Therefore, a PB with realtime workflow can only be created using the iTango interface.
+Note - the ska-sdp command can only create a PB with a batch workflow. 
+A real-time PB must be linked to a Scheduling Block Instance (SBI), and 
+there is currently no way to do that using ska-sdp. A PB with a real-time 
+workflow can only be created using the iTango interface.
 
 The processing block is created with the `/pb` prefix in the
 configuration:
@@ -369,13 +369,12 @@ $ helm uninstall test
 
 ## Developing the SDP chart
 
-If you want to install the chart from the source code in the`SDP Integration repository 
-<https://developer.skao.int/projects/ska-sdp-lmc/en/latest/sdp_subarray.html>`_, 
-for instance if you are developing a new version, then you can do it like this:
+If you want to install the chart from the source code in the SDP Integration
+repository, for instance if you are developing a new version, then you can do
+it like this:
 
 ```console
-$ cd charts
-$ helm install --dependency-update test sdp
+$ helm install --dependency-update test charts/sdp
 ```
 
 The `--dependency-update` flag downloads the `ska-tango-base` chart on which the
@@ -384,18 +383,5 @@ The `--dependency-update` flag downloads the `ska-tango-base` chart on which the
 ## Developing SDP Workflows
 
 Instructions on how to develop and test SDP workflows can be found in the
-`Science Pipeline Workflows 
-<https://developer.skao.int/projects/ska-sdp-lmc/en/latest/sdp_subarray.html>`_ documentation.
-
-## Releasing the python package
-
-When new release is ready:
-
-  - check out master
-  - update CHANGELOG.md
-  - commit changes
-  - make release-[patch||minor||major]
-
-Note: bumpver needs to be installed
-
-
+`Science Pipeline Workflows
+<https://developer.skatelescope.org/projects/ska-sdp-science-pipelines/en/latest/index.html>`_ documentation.
