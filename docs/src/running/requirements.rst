@@ -9,9 +9,8 @@ To run the SDP, you need to have `Kubernetes <https://kubernetes.io/>`_ and
 Kubernetes
 ----------
 
-There are a number of way to install and run Kubernetes in your development
-environment. There are many ways of doing this, including Docker Desktop,
-Minikube (recommended) and microk8s.
+There are a number of ways to install and run Kubernetes in your development
+environment, including Docker Desktop, Minikube (recommended) and microk8s.
 
 Docker Desktop
 ^^^^^^^^^^^^^^
@@ -30,13 +29,14 @@ different `drivers <https://minikube.sigs.k8s.io/docs/drivers/>`_ to run
 Kubernetes in a virtual machine or container. On Windows, the Hyper-V
 hypervisor can be enabled in the settings, after which a reboot is required.
 
-Minikube can be started with the default configurations by doing:
+Minikube can be started with the default configuration by doing:
 
 .. code-block:: console
 
     $ minikube start
 
-If you need to increase the amount of memory that the Minikube VM uses, you can:
+If you need to increase the amount of memory that the Minikube VM uses, you can
+pass this as an option:
 
 .. code-block:: console
 
@@ -57,13 +57,12 @@ This can be done by setting the environment variables:
     $ minikube docker-env
     $ eval $(minikube -p minikube docker-env)
 
-
-
 Microk8s
 ^^^^^^^^
 
 Canonical supports `microk8s <https://microk8s.io>`_ for Linux, macOS and
 Windows.
+
 
 Helm
 ----
@@ -83,10 +82,8 @@ but it is recommended for its ease of use.
 Commands Help Guide
 -------------------
 
-To know more about the available commands, here are some useful links:
+To find out more about the available commands, here are some useful links:
 
-* Helm - `<https://helm.sh/docs/helm/helm/>`_.
-* Kubectl - `<https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands>`_.
-* Docker  - `<https://docs.docker.com/engine/reference/commandline/cli/>`_.
-
-
+* Helm - `<https://helm.sh/docs/helm/helm/>`_
+* Kubectl - `<https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands>`_
+* Docker  - `<https://docs.docker.com/engine/reference/commandline/cli/>`_
