@@ -16,7 +16,7 @@ The default namespace into which SKAMPI deploys (in a non-GitLab CI environment)
 You can change this by setting the ``KUBE_NAMESPACE`` and ``KUBE_NAMESPACE_SDP`` environment
 variables before deploying SKAMPI. E.g:
 
-.. code-block::
+.. code-block:: console
 
     $ export KUBE_NAMESPACE=test-skampi-deployment
     $ export KUBE_NAMESPACE_SDP=test-skampi-deployment-sdp
@@ -37,7 +37,7 @@ Follow the "Testing it out" steps in :ref:`running_standalone`. Remember to spec
 namespace in which the pod is running when you want to access one. E.g. to start the
 console pod, run:
 
-.. code-block::
+.. code-block:: console
 
     $ kubectl -n <namespace> exec -it sdp-console-0 -- bash
 
@@ -47,7 +47,7 @@ Using the iTango pod
 If your deployment doesn't have the ``ska-tango-base-itango-console`` running, add the following
 to the ``pipeline.yml`` file in the SKAMPI root directory:
 
-.. code-block::
+.. code-block:: yaml
 
     tango-base:
       itango:
@@ -55,9 +55,9 @@ to the ``pipeline.yml`` file in the SKAMPI root directory:
 
 And then upgrade your SKAMPI installation via its Makefile:
 
-.. code-block::
+.. code-block:: console
 
-    make upgrade-chart VALUES=pipeline.yml
+    $ make upgrade-chart VALUES=pipeline.yml
 
 
 Once you have a running iTango console, follow the steps to test it out
@@ -85,7 +85,7 @@ has the name ``oet-jupyter-test-...``, where ``...`` will be a multi-character s
 
 The webserver running in this pod can be accessed via a web link of the following structure:
 
-.. code-block::
+.. code-block:: console
 
     http://<ingress_host>/<namespace>/jupyter
 
@@ -93,9 +93,9 @@ The webserver running in this pod can be accessed via a web link of the followin
 called ``INGRESS_HOST``, or the default one can be found in the ``Makefile`` of SKAMPI under the same variable name.
 You can also find this value by running this command:
 
-.. code-block::
+.. code-block:: console
 
-    kubectl describe ingress <pod_name> -n <namespace>
+    $ kubectl describe ingress <pod_name> -n <namespace>
 
 Depending on how you access the website (i.e. with port forwarding or directly), you may need to
 replace the ``<ingress_host>`` with your localhost or similar.
@@ -111,7 +111,7 @@ configuration string to control the subarray device and hence, SDP.
 Example JSON files can be found in the `OET Scripts repository <https://gitlab.com/ska-telescope/ska-oso-scripting/-/tree/master/scripts/data>`_.
 Here is an example how you can update the lines which require JSON files:
 
-.. code-block::
+.. code-block:: python
 
     # Allocate resources, provide a path to a file with allocation JSON
     subarray.allocate_from_file('../data/example_allocate.json')
@@ -132,4 +132,3 @@ The easiest to do this is through the
 `terminal window of the Jupyter <https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/oet_with_skampi.html#accessing-oet-rest-client-in-jupyter-terminal>`_
 server deployed in SKAMPI. Please follow the above links to learn more about OET and how to use Python scripts
 to control an SKA telescope via this interface.
-
