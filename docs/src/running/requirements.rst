@@ -32,19 +32,19 @@ hypervisor can be enabled in the settings, after which a reboot is required.
 
 Minikube can be started with the default configurations by doing:
 
-.. code-block::
+.. code-block:: console
 
     $ minikube start
 
 If you need to increase the amount of memory that the Minikube VM uses, you can:
 
-.. code-block::
+.. code-block:: console
 
     $ minikube start --memory='4096m'
 
 Alternatively, you may configure this as a default by doing:
 
-.. code-block::
+.. code-block:: console
 
     $ minikube config set memory 4096
 
@@ -52,7 +52,7 @@ If you are developing SDP components and you would like to build and test them
 in Minikube, you need to configure Docker to use the daemon inside the VM.
 This can be done by setting the environment variables:
 
-.. code-block::
+.. code-block:: console
 
     $ minikube docker-env
     $ eval $(minikube -p minikube docker-env)

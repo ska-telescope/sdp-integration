@@ -13,7 +13,7 @@ The SDP deploys its workflows and their execution engines into a separate
 Kubernetes namespace from the controllers. Before deploying the SDP you need to
 create this namespace, which by default is called ``sdp``:
 
-.. code-block::
+.. code-block:: console
 
     $ kubectl create namespace sdp
 
@@ -23,31 +23,31 @@ Deploying the SDP
 Releases of the SDP Helm chart are published in the EngageSKA Nexus repository.
 To install the released version, you need to add this chart repository to helm:
 
-.. code-block::
+.. code-block:: console
 
     $ helm repo add ska https://nexus.engageska-portugal.pt/repository/helm-chart
 
 The chart can be installed with the command (assuming the release name is ``test``):
 
-.. code-block::
+.. code-block:: console
 
     $ helm install test ska/sdp
 
 You can watch the deployment in progress using ``kubectl``:
 
-.. code-block::
+.. code-block:: console
 
     $ kubectl get pod --watch
 
 or the ``k9s`` terminal-based UI (recommended):
 
-.. code-block::
+.. code-block:: console
 
     $ k9s
 
 Wait until all the pods are running:
 
-.. code-block::
+.. code-block:: console
 
      default      databaseds-tango-base-test-0  ●  1/1          0 Running    172.17.0.12     m01   119s
      default      sdp-console-0                 ●  1/1          0 Running    172.17.0.15     m01   119s
@@ -63,13 +63,13 @@ Wait until all the pods are running:
 
 You can check the logs of pods to verify that they are doing okay:
 
-.. code-block::
+.. code-block:: console
 
     kubectl logs <pod_name>
 
 For example:
 
-.. code-block::
+.. code-block:: console
 
     $ kubectl logs sdp-lmc-subarray-01-0
     ...
@@ -94,13 +94,13 @@ Connecting to the configuration database
 The ``sdp`` chart deploys a 'console' pod which enables you to interact with the
 configuration database. You can start a shell in the pod by doing:
 
-.. code-block::
+.. code-block:: console
 
     $ kubectl exec -it sdp-console-0 -- bash
 
 This will allow you to use the ``ska-sdp`` command:
 
-.. code-block::
+.. code-block:: console
 
     # ska-sdp list -a
     Keys with prefix /:
@@ -124,13 +124,13 @@ Starting a workflow
 Assuming the configuration is prepared as explained in the previous
 section, we can now add a processing block to the configuration:
 
-.. code-block::
+.. code-block:: console
 
-    ska-sdp create pb <workflow_type>:<workflow_id>:<workflow_version>
+    # ska-sdp create pb <workflow_type>:<workflow_id>:<workflow_version>
 
 For example
 
-.. code-block::
+.. code-block:: console
 
     # ska-sdp create pb batch:test_dask:0.2.5
     OK, pb_id = pb-sdpcli-20210525-00000
@@ -143,7 +143,7 @@ workflow can only be created using the iTango interface.
 The processing block is created with the ``/pb`` prefix in the
 configuration:
 
-.. code-block::
+.. code-block:: console
 
     # ska-sdp list -v pb
     Keys with /pb prefix:
@@ -178,7 +178,7 @@ deploys the workflow. The workflow in turn deploys the execution engines
 with ``/deploy`` prefix in the configuration, where they are detected by
 the Helm deployer which actually makes the deployments:
 
-.. code-block::
+.. code-block:: console
 
     # ska-sdp list -v deployment
     Keys with /deploy prefix:
@@ -213,7 +213,7 @@ The deployments associated with the processing block have been created
 in the ``sdp`` namespace, so to view the created pods we have to ask as
 follows (on the host):
 
-.. code-block::
+.. code-block:: console
 
     $ kubectl get pod -n sdp
     NAME                                                            READY   STATUS    RESTARTS   AGE
@@ -228,7 +228,7 @@ Cleaning up
 Finally, let us remove the processing block from the configuration (in the SDP
 console shell):
 
-.. code-block::
+.. code-block:: console
 
     # ska-sdp delete pb pb-sdpcli-20210525-00000
     /pb/pb-sdpcli-20210525-00000
@@ -246,19 +246,19 @@ Accessing the Tango interface
 By default, the ``sdp`` chart does not deploy the iTango shell pod from the
 ``ska-tango-base`` chart. To enable it, you can upgrade the release with:
 
-.. code-block::
+.. code-block:: console
 
-    helm upgrade test ska/sdp --set ska-tango-base.itango.enabled=true
+    $ helm upgrade test ska/sdp --set ska-tango-base.itango.enabled=true
 
 Then you can start an iTango session with:
 
-.. code-block::
+.. code-block:: console
 
     $ kubectl exec -it ska-tango-base-itango-console -- itango3
 
 You should be able to list the Tango devices:
 
-.. code-block::
+.. code-block:: python
 
     In [1]: lsdev
     Device                                   Alias                     Server                    Class
@@ -273,7 +273,7 @@ You should be able to list the Tango devices:
 This allows direct interaction with the devices, such as querying and
 changing attributes and issuing commands:
 
-.. code-block::
+.. code-block:: python
 
     In [2]: d = DeviceProxy('test_sdp/elt/subarray_1')
 
@@ -374,7 +374,7 @@ Removing the SDP
 
 To remove the SDP deployment from the cluster, do:
 
-.. code-block::
+.. code-block:: console
 
     $ helm uninstall test
 
@@ -385,7 +385,7 @@ If you want to install the chart from the source code in the SDP Integration
 repository, for instance if you are developing a new version, then you can do
 it like this:
 
-.. code-block::
+.. code-block:: console
 
     $ helm install --dependency-update test charts/sdp
 
