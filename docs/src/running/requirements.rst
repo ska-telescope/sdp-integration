@@ -83,42 +83,10 @@ but it is recommended for its ease of use.
 Commands Help Guide
 -------------------
 
-Here are a list of key commands for Docker:
+To know more about the available commands, here are some useful links:
 
-=============== ===========
-commands        Description
-=============== ===========
-docker images   List docker images
---------------- -----------
-docker build    Build an image from a Dockerfile
---------------- -----------
-docker pull     Pull an image or a repository from a registry
---------------- -----------
-docker push     Push an image or a repository to a registry
---------------- -----------
-docker rmi      Remove one or more images
-=============== ===========
-
-List of all other docker commands can be found at
-`<https://docs.docker.com/engine/reference/commandline/cli/>`_.
-
-Here are a list of key commands for kubectl:
-
-==================================== ===========
-commands                             Description
-==================================== ===========
-kubectl create namespace             Create a namespace with the specified name.
------------------------------------- -----------
-kubectl logs                         Print the logs for a container in a pod or specified resource
------------------------------------- -----------
-kubectl run                          Create and run a particular image in a pod.
------------------------------------- -----------
-kubectl get pods/services/namespaces List all pods, services or namespaces
------------------------------------- -----------
-kubectl delete deployments/services  Delete deployments or services
-==================================== ===========
-
-List of all other kubectl commands can be found at
-`<https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands>`_.
+* Helm - `<https://helm.sh/docs/helm/helm/>`_.
+* Kubectl - `<https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands>`_.
+* Docker  - `<https://docs.docker.com/engine/reference/commandline/cli/>`_.
 
 
