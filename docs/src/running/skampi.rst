@@ -1,7 +1,7 @@
-.. _running_integration:
+.. _running_skampi:
 
-Running the SDP in the integration environment
-==============================================
+Running the SDP in SKAMPI
+=========================
 
 The Science Data Processor (SDP) is integrated with the other telescope subsystems as part of the
 SKA evolutionary prototype, also known as the *Minimum Viable Product* (MVP).

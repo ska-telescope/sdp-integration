@@ -23,7 +23,7 @@ they are built.
 
   running/requirements
   running/standalone
-  running/integration
+  running/skampi
   running/helm-chart
 
 Indices and tables
