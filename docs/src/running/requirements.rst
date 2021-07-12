@@ -9,8 +9,8 @@ To run the SDP, you need to have `Kubernetes <https://kubernetes.io/>`_ and
 Kubernetes
 ----------
 
-There are a number of way to install and run Kubernetes in your development
-environment.
+There are a number of ways to install and run Kubernetes in your development
+environment, including Docker Desktop, Minikube (recommended) and microk8s.
 
 Docker Desktop
 ^^^^^^^^^^^^^^
@@ -29,25 +29,40 @@ different `drivers <https://minikube.sigs.k8s.io/docs/drivers/>`_ to run
 Kubernetes in a virtual machine or container. On Windows, the Hyper-V
 hypervisor can be enabled in the settings, after which a reboot is required.
 
-If you need to increase the amount of memory that the Minikube VM uses, you can
-specify it on the command line when starting a new instance, for example:
+Minikube can be started with the default configuration by doing:
 
-.. code-block::
+.. code-block:: console
+
+    $ minikube start
+
+If you need to increase the amount of memory that the Minikube VM uses, you can
+pass this as an option:
+
+.. code-block:: console
 
     $ minikube start --memory='4096m'
 
 Alternatively, you may configure this as a default by doing:
 
-.. code-block::
+.. code-block:: console
 
     $ minikube config set memory 4096
 
+If you are developing SDP components and you would like to build and test them
+in Minikube, you need to configure Docker to use the daemon inside the VM.
+This can be done by setting the environment variables:
+
+.. code-block:: console
+
+    $ minikube docker-env
+    $ eval $(minikube -p minikube docker-env)
 
 Microk8s
 ^^^^^^^^
 
 Canonical supports `microk8s <https://microk8s.io>`_ for Linux, macOS and
 Windows.
+
 
 Helm
 ----
@@ -62,3 +77,13 @@ K9s
 `K9s <https://k9scli.io>`_ is terminal-based UI for Kubernetes clusters which
 provides a convenient interactive interface. It is not required to run the SDP,
 but it is recommended for its ease of use.
+
+
+Commands Help Guide
+-------------------
+
+To find out more about the available commands, here are some useful links:
+
+* Helm - `<https://helm.sh/docs/helm/helm/>`_
+* Kubectl - `<https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands>`_
+* Docker  - `<https://docs.docker.com/engine/reference/commandline/cli/>`_

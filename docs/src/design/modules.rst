@@ -19,8 +19,8 @@ The source code is hosted in the `SKA Science Data Processor group in GitLab
 
 * `ska-sdp-integration <https://gitlab.com/ska-telescope/sdp/ska-sdp-integration>`_
 
-  Integration of components into the SDP subsystem. Contains the Helm chart to
-  deploy the SDP and this documentation.
+  Integration of components into the SDP system. Contains the Helm chart to
+  deploy the SDP, and this documentation.
 
 * `ska-sdp-config <https://gitlab.com/ska-telescope/sdp/ska-sdp-config>`_
 

@@ -10,3 +10,14 @@ The components are built as Docker images from the following repositories:
 * [Processing controller](https://gitlab.com/ska-telescope/sdp/ska-sdp-proccontrol/)
 * [Helm deployer](https://gitlab.com/ska-telescope/sdp/ska-sdp-helmdeploy/)
 * [Console](https://gitlab.com/ska-telescope/sdp/ska-sdp-console/)
+
+## Releasing the Helm chart
+
+When new release is ready:
+
+  - check out master
+  - update CHANGELOG.md
+  - commit changes
+  - make release-[patch||minor||major]
+
+Note: bumpver needs to be installed
