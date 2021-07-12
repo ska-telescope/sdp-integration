@@ -9,11 +9,12 @@ The integration is done in the `SKA MVP Prototype Integration (SKAMPI)
 repository <https://gitlab.com/ska-telescope/skampi/>`_.
 
 Instructions for installing and running the MVP can be found in the `SKAMPI
-documentation <https://developer.skatelescope.org/projects/skampi/en/latest/>`_.
+documentation <https://developer.skao.int/projects/skampi/en/latest/>`_.
 `TODO: this needs exact, better links (probably need to wait for skampi docs to be updated)`
 
-The default namespace into which SKAMPI deploys is ``integration``. You can change this by
-setting the `KUBE_NAMESPACE` and `KUBE_NAMESPACE_SDP` environment variables before deploying SKAMPI. E.g:
+The default namespace into which SKAMPI deploys (in a non-GitLab CI environment) is ``integration``.
+You can change this by setting the ``KUBE_NAMESPACE`` and ``KUBE_NAMESPACE_SDP`` environment
+variables before deploying SKAMPI. E.g:
 
 .. code-block::
 
@@ -23,7 +24,7 @@ setting the `KUBE_NAMESPACE` and `KUBE_NAMESPACE_SDP` environment variables befo
 If you are deploying on a shared machine, make sure your namespace doesn't clash with existing
 SKAMPI deployments.
 
-SDP is integrated within both SKAMPI for Mid and SKAMPI for Low. All of the standard SDP pods
+SDP is integrated into the SKAMPI charts for SKA-Mid and SKA-Low. All of the standard SDP pods
 will start up upon SKAMPI deployment.
 
 Interacting with SDP within SKAMPI
@@ -43,8 +44,8 @@ console pod, run:
 Using the iTango pod
 ^^^^^^^^^^^^^^^^^^^^
 
-If your deployment doesn't have the `ska-tango-base-itango-console` running, add the following
-to the ```pipeline.yml`` file in the SKAMPI root directory:
+If your deployment doesn't have the ``ska-tango-base-itango-console`` running, add the following
+to the ``pipeline.yml`` file in the SKAMPI root directory:
 
 .. code-block::
 
@@ -52,8 +53,12 @@ to the ```pipeline.yml`` file in the SKAMPI root directory:
       itango:
         enabled: true
 
-And then upgrade your SKAMPI installation via its Makefile (``make upgrade-chart VALUES=pipeline.yml``) or
-using ``helm upgrade ..``.
+And then upgrade your SKAMPI installation via its Makefile:
+
+.. code-block::
+
+    make upgrade-chart VALUES=pipeline.yml
+
 
 Once you have a running iTango console, follow the steps to test it out
 in :ref:`running_standalone` at "Accessing the Tango interface" section.
@@ -84,8 +89,8 @@ The webserver running in this pod can be accessed via a web link of the followin
 
     http://<ingress_host>/<namespace>/jupyter
 
-``<namespace>`` is the `KUBE_NAMESPACE`, while the ``<ingress_host>`` is either an environment variable
-called `INGRESS_HOST`, or the default one can be found in the `Makefile` of SKAMPI under the same variable name.
+``<namespace>`` is the ``KUBE_NAMESPACE``, while the ``<ingress_host>`` is either an environment variable
+called ``INGRESS_HOST``, or the default one can be found in the ``Makefile`` of SKAMPI under the same variable name.
 You can also find this value by running this command:
 
 .. code-block::
@@ -97,7 +102,7 @@ replace the ``<ingress_host>`` with your localhost or similar.
 More information on how to access the Notebooks on SKAMPI (including the required password) can be found in the
 `OET docs <https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/oet_with_skampi.html#accessing-jupyter-on-skampi>`_.
 
-You can access the existing Notebooks in `scripts/notebooks`. Based on these examples,
+You can access the existing Notebooks in ``scripts/notebooks``. Based on these examples,
 you may also `create your own <https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/oet_with_skampi.html>`_
 version of an SKA control Notebook. You may also use the OET scripts as a starting point for your own development. For example,
 the steps in the script at `Control using static JSON <https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/writing_control_scripts_without_sbs.html#control-using-static-json>`_
