@@ -15,10 +15,9 @@ information about the intended behaviour of the system, such as the high-level
 requirements. It also captures the behaviour of the system as currently
 implemented, including the outcome of tests against the requirements.
 
-The components of the SDP system are software instances, configured for and deployed
-to various hardware managed by the observatory and SKA Mid and Low telescopes.
-More details about the components can be viewed on the :ref:`design_components` page.
+The SDP system is composed of a number of components. The component and connector
+view describes them, and the relationships between them. The module view describes
+how the components are built from software modules and how they are deployed.
 
-A module view shows how the system is structured as a set of code units.
-The SDP software units are organized as modules. More details about this can be
-found on the :ref:`design_modules` page.
+More details about the components can be viewed on the :ref:`design_components` page
+and for modules can be found at the :ref:`design_modules` page.
