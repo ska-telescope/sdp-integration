@@ -16,8 +16,7 @@ them. The components, grouped by function, are as follows.
 * The **SDP Master Tango Device** is intended to provide the top-level
   control of SDP services. The present implementation does very little,
   apart from executing internal state transitions in response to Tango
-  commands. As shown in the diagram, it does not yet have a connection
-  to the Configuration Database.
+  commands.
 
 * The **SDP Subarray Tango Devices** control the processing associated
   with SKA Subarrays. When a Processing Block is submitted to SDP
