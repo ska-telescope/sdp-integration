@@ -14,3 +14,11 @@ the SKA Community Confluence (wiki). The Solution Intent contains other
 information about the intended behaviour of the system, such as the high-level
 requirements. It also captures the behaviour of the system as currently
 implemented, including the outcome of tests against the requirements.
+
+The components of the SDP system are software instances, configured for and deployed
+to various hardware managed by the observatory and SKA Mid and Low telescopes.
+More details about the components can be viewed on the :ref:`design_components` page.
+
+A module view shows how the system is structured as a set of code units.
+The SDP software units are organized as modules. More details about this can be
+found on the :ref:`design_modules` page.
