@@ -3,8 +3,8 @@
 Running the SDP stand-alone
 ===========================
 
-Before proceeding run the SDP, local development environment needs to be set up.
-Details can be found at the :ref:`running_requirements` page.
+Before running the SDP, your local development environment needs to be set up.
+Details can be found in the :ref:`requirements <running_requirements>` section.
 
 Create the namespace for SDP workflows
 --------------------------------------
@@ -65,7 +65,7 @@ You can check the logs of pods to verify that they are doing okay:
 
 .. code-block:: console
 
-    kubectl logs <pod_name>
+    $ kubectl logs <pod_name>
 
 For example:
 
