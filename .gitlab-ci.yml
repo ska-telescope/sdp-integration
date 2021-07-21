@@ -11,7 +11,7 @@ stages:
   - build
   - publish
 
-image: quay.io/helmpack/chart-testing:latest
+image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
 
 # ============================================================================
 # Lint Helm chart, build docs and run tests
@@ -20,15 +20,16 @@ image: quay.io/helmpack/chart-testing:latest
 lint:
   stage: test
   script:
+    - helm dependency update charts/ska-sdp
     - helm lint charts/ska-sdp
 
 docs:
   stage: test
   except:
     - tags
-  image: python:latest
+  image: python:3.9
   before_script:
-    - pip3 install -r docs/requirements.txt
+    - pip install -r docs/requirements.txt
   script:
     - cd docs
     - make html
@@ -39,7 +40,6 @@ docs:
     when: always
 
 .k8s-test:
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
   except:
     - tags
   tags:
@@ -98,55 +98,48 @@ test-cleanup:
     action: stop
 
 # ============================================================================
-# Build Helm chart
+# Package and publish Helm chart
 # ============================================================================
 
-.build-helm:
-  stage: build
+.publish:
+  stage: publish
+  before_script:
+    - /usr/local/bin/extract-metadata.sh charts/ska-sdp/MANIFEST.skao.int
   artifacts:
     paths:
       - ska-sdp-*.tgz
     expire_in: 1 week
 
-build-dev:
-  extends: .build-helm
+# Publish development version to GitLab on non-tag commit
+
+publish-dev:
+  extends: .publish
   script:
-    - version=$(awk '/^version/ {print $2}' charts/ska-sdp/Chart.yaml | tr -d '"')
-    - helm package charts/ska-sdp --dependency-update --version=${version}+${CI_COMMIT_SHORT_SHA}
+    - version=$(awk '/^version/ {print $2}' charts/ska-sdp/Chart.yaml | tr -d '"')+${CI_COMMIT_SHORT_SHA}
+    - helm package charts/ska-sdp --dependency-update --version=${version}
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ska-sdp-${version}.tgz "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/ska-sdp/${version}/ska-sdp-${version}.tgz"'
   rules:
     - if: '$CI_COMMIT_TAG == null || $CI_COMMIT_TAG == ""'
 
-build-release:
-  extends: .build-helm
+# Publish release to artefact repository on tag on default branch
+
+publish-release:
+  extends: .publish
   script:
     - helm package charts/ska-sdp --dependency-update
+    - curl -u $CAR_HELM_USERNAME:$CAR_HELM_PASSWORD --upload-file ska-sdp-*.tgz $CAR_HELM_REPOSITORY_URL
   only:
     variables:
        - $CI_COMMIT_MESSAGE =~ /^.+$/ # Confirm tag message exists
        - $CI_COMMIT_TAG =~ /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/ #Confirm semantic versioning of tag
   except:
     - branches
-
-# ============================================================================
-# Publish Helm chart (tag only)
-# ============================================================================
-
-publish:
-  stage: publish
-  only:
-    variables:
-       - $CI_COMMIT_MESSAGE =~ /^.+$/ # Confirm tag message exists
-       - $CI_COMMIT_TAG =~ /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/ #Confirm semantic versioning of tag
-  except:
-    - branches
-  script:
-    - curl --user ${HELM_USERNAME}:${HELM_PASSWORD} --upload-file sdp-*.tgz ${HELM_HOST}/repository/helm-chart/
 
 # ============================================================================
 # CI metrics
 # ============================================================================
 # Create Gitlab CI badges from CI metrics
-# https://developer.skatelescope.org/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci-pipeline
+# https://developer.skao.int/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci-pipeline
 include:
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/post_step.yml'
