@@ -53,7 +53,7 @@ interacting with the configuration database.
     - ``true``
   * - ``console.image``
     - Console container image
-    - ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-console``
+    - ``artefact.skao.int/ska-sdp-console``
   * - ``console.version``
     - Console container version
     - See `values file`_
@@ -80,7 +80,7 @@ interacting with the configuration database.
     - ``true``
   * - ``opinterface.image``
     - Operator web interface container image
-    - ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-opinterface``
+    - ``artefact.skao.int/ska-sdp-opinterface``
   * - ``opinterface.version``
     - Operator web interface container version
     - See `values file`_
@@ -101,7 +101,7 @@ Processing controller
     - Default
   * - ``proccontrol.image``
     - Processing controller container image
-    - ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-proccontrol``
+    - ``artefact.skao.int/ska-sdp-proccontrol``
   * - ``proccontrol.version``
     - Processing controller container version
     - See `values file`_
@@ -133,7 +133,9 @@ chart.
     - List of workflow definitions. If present, used instead of the URL. See the example below
     - Not set
 
-Example of workflow definitions in a values file::
+Example of workflow definitions in a values file:
+
+.. code-block:: yaml
 
   workflows:
     definitions:
@@ -159,7 +161,7 @@ Helm deployer
     - Default
   * - ``helmdeploy.image``
     - Helm deployer container image
-    - ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-helmdeploy``
+    - ``artefact.skao.int/ska-sdp-helmdeploy``
   * - ``helmdeploy.version``
     - Helm deployer container version
     - See `values file`_
@@ -201,7 +203,7 @@ LMC (Tango devices)
     - ``true``
   * - ``lmc.image``
     - LMC container image
-    - ``nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-lmc``
+    - ``artefact.skao.int/ska-sdp-lmc``
   * - ``lmc.version``
     - LMC container version
     - See `values file`_
@@ -264,7 +266,9 @@ via HTTPS: the workflow definitions and the Helm charts.
     - List of addresses or subnets for which the proxy should not be used
     - Not set
 
-Example of proxy settings in a values file::
+Example of proxy settings in a values file:
+
+.. code-block:: yaml
 
   proxy:
     server: http://proxy.mydomain
