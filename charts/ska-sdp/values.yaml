@@ -35,8 +35,8 @@ console:
   subsystem: execution-control
   function: maintenance-control
   domain: science-data-processing
-  image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-console
-  version: 0.3.0
+  image: artefact.skao.int/ska-sdp-console
+  version: 0.3.1
   imagePullPolicy: IfNotPresent
   replicas: 1
   enabled: true
@@ -47,8 +47,8 @@ opinterface:
   subsystem: execution-control
   function: maintenance-control
   domain: science-data-processing
-  image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-opinterface
-  version: 0.2.0
+  image: artefact.skao.int/ska-sdp-opinterface
+  version: 0.2.1
   imagePullPolicy: IfNotPresent
   replicas: 1
   enabled: true
@@ -59,8 +59,8 @@ proccontrol:
   subsystem: execution-control
   function: PB-execution
   domain: science-data-processing
-  image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-proccontrol
-  version: 0.10.0
+  image: artefact.skao.int/ska-sdp-proccontrol
+  version: 0.10.1
   imagePullPolicy: IfNotPresent
   replicas: 1
 
@@ -75,8 +75,8 @@ helmdeploy:
   subsystem: execution-control
   function: runtime-deployment
   domain: science-data-processing
-  image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-helmdeploy
-  version: 0.9.0
+  image: artefact.skao.int/ska-sdp-helmdeploy
+  version: 0.9.1
   imagePullPolicy: IfNotPresent
   replicas: 1
   namespace: sdp
@@ -91,8 +91,8 @@ helmdeploy:
 lmc:
   component: sdp-lmc
   subsystem: execution-control
-  image: nexus.engageska-portugal.pt/sdp-prototype/ska-sdp-lmc
-  version: 0.17.1
+  image: artefact.skao.int/ska-sdp-lmc
+  version: 0.17.2
   imagePullPolicy: IfNotPresent
   enabled: true
   allCommandsHaveArgument: false

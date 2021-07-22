@@ -6,17 +6,17 @@ kind: Namespace
 metadata:
   name: {{ .Values.helmdeploy.namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
 {{- end }}
 ---
 # Dummy Service to ensure Pod is DNS addressable
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "sdp.name" . }}-helmdeploy
+  name: {{ include "ska-sdp.name" . }}-helmdeploy
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.helmdeploy.component }}
     subsystem: {{ .Values.helmdeploy.subsystem }}
     function: {{ .Values.helmdeploy.function }}
@@ -31,10 +31,10 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "sdp.name" . }}-helmdeploy
+  name: {{ include "ska-sdp.name" . }}-helmdeploy
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.helmdeploy.component }}
     subsystem: {{ .Values.helmdeploy.subsystem }}
     function: {{ .Values.helmdeploy.function }}
@@ -46,11 +46,11 @@ spec:
     matchLabels:
       component: {{ .Values.helmdeploy.component }}
       subsystem: {{ .Values.helmdeploy.subsystem }}
-  serviceName: {{ include "sdp.name" . }}-helmdeploy
+  serviceName: {{ include "ska-sdp.name" . }}-helmdeploy
   template:
     metadata:
       labels:
-        {{- include "sdp.labels" . | indent 8 }}
+        {{- include "ska-sdp.labels" . | indent 8 }}
         component: {{ .Values.helmdeploy.component }}
         subsystem: {{ .Values.helmdeploy.subsystem }}
         function: {{ .Values.helmdeploy.function }}
@@ -58,14 +58,14 @@ spec:
         intent: production
     spec:
       initContainers:
-      {{- include "sdp.wait-for-etcd" . | nindent 6 }}
+      {{- include "ska-sdp.wait-for-etcd" . | nindent 6 }}
       containers:
       - name: helmdeploy
         image: {{ .Values.helmdeploy.image }}:{{ .Values.helmdeploy.version }}
         imagePullPolicy: {{ .Values.helmdeploy.imagePullPolicy }}
         env:
         - name: SDP_CONFIG_HOST
-          value: {{ include "sdp.etcd-host" . }}
+          value: {{ include "ska-sdp.etcd-host" . }}
         - name: SDP_HELM_NAMESPACE
           value: {{ quote .Values.helmdeploy.namespace }}
         - name: SDP_HELM_PREFIX
@@ -74,16 +74,16 @@ spec:
           value: {{ quote .Values.helmdeploy.chart_repo.url }}
         - name: SDP_CHART_REPO_REFRESH
           value: {{ quote .Values.helmdeploy.chart_repo.refresh }}
-        {{- include "sdp.http-proxy" . | nindent 8 }}
-      serviceAccountName: {{ include "sdp.name" . }}-helm
+        {{- include "ska-sdp.http-proxy" . | nindent 8 }}
+      serviceAccountName: {{ include "ska-sdp.name" . }}-helm
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ include "sdp.name" . }}-helm
+  name: {{ include "ska-sdp.name" . }}-helm
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.helmdeploy.component }}
     subsystem: {{ .Values.helmdeploy.subsystem }}
     function: {{ .Values.helmdeploy.function }}
@@ -93,10 +93,10 @@ metadata:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "sdp.name" . }}-helm
+  name: {{ include "ska-sdp.name" . }}-helm
   namespace: {{ .Values.helmdeploy.namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.helmdeploy.component }}
     subsystem: {{ .Values.helmdeploy.subsystem }}
     function: {{ .Values.helmdeploy.function }}
@@ -104,20 +104,20 @@ metadata:
     intent: production
 subjects:
 - kind: ServiceAccount
-  name: {{ include "sdp.name" . }}-helm
+  name: {{ include "ska-sdp.name" . }}-helm
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
-  name: {{ include "sdp.name" . }}-helm
+  name: {{ include "ska-sdp.name" . }}-helm
   apiGroup: rbac.authorization.k8s.io
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "sdp.name" . }}-helm
+  name: {{ include "ska-sdp.name" . }}-helm
   namespace: {{ .Values.helmdeploy.namespace }}
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.helmdeploy.component }}
     subsystem: {{ .Values.helmdeploy.subsystem }}
     function: {{ .Values.helmdeploy.function }}
@@ -136,9 +136,9 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "sdp.name" . }}-helm-global
+  name: {{ include "ska-sdp.name" . }}-helm-global
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.helmdeploy.component }}
     subsystem: {{ .Values.helmdeploy.subsystem }}
     function: {{ .Values.helmdeploy.function }}
@@ -146,19 +146,19 @@ metadata:
     intent: production
 subjects:
 - kind: ServiceAccount
-  name: {{ include "sdp.name" . }}-helm
+  name: {{ include "ska-sdp.name" . }}-helm
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ include "sdp.name" . }}-helm-global
+  name: {{ include "ska-sdp.name" . }}-helm-global
   apiGroup: rbac.authorization.k8s.io
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "sdp.name" . }}-helm-global
+  name: {{ include "ska-sdp.name" . }}-helm-global
   labels:
-    {{- include "sdp.labels" . | indent 4 }}
+    {{- include "ska-sdp.labels" . | indent 4 }}
     component: {{ .Values.helmdeploy.component }}
     subsystem: {{ .Values.helmdeploy.subsystem }}
     function: {{ .Values.helmdeploy.function }}

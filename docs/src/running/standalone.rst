@@ -20,18 +20,18 @@ create this namespace, which by default is called ``sdp``:
 Deploying the SDP
 -----------------
 
-Releases of the SDP Helm chart are published in the EngageSKA Nexus repository.
-To install the released version, you need to add this chart repository to helm:
+Releases of the SDP Helm chart are published in the SKA artefact repository. To
+install the released version, you need to add this chart repository to helm:
 
 .. code-block:: console
 
-    $ helm repo add ska https://nexus.engageska-portugal.pt/repository/helm-chart
+    $ helm repo add ska https://artefact.skao.int/repository/helm-internal
 
 The chart can be installed with the command (assuming the release name is ``test``):
 
 .. code-block:: console
 
-    $ helm install test ska/sdp
+    $ helm install test ska/ska-sdp
 
 You can watch the deployment in progress using ``kubectl``:
 
@@ -91,7 +91,7 @@ Testing it out
 Connecting to the configuration database
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``sdp`` chart deploys a 'console' pod which enables you to interact with the
+The ``ska-sdp`` chart deploys a 'console' pod which enables you to interact with the
 configuration database. You can start a shell in the pod by doing:
 
 .. code-block:: console
@@ -243,12 +243,12 @@ undone as well.
 Accessing the Tango interface
 -----------------------------
 
-By default, the ``sdp`` chart does not deploy the iTango shell pod from the
+By default, the ``ska-sdp`` chart does not deploy the iTango shell pod from the
 ``ska-tango-base`` chart. To enable it, you can upgrade the release with:
 
 .. code-block:: console
 
-    $ helm upgrade test ska/sdp --set ska-tango-base.itango.enabled=true
+    $ helm upgrade test ska/ska-sdp --set ska-tango-base.itango.enabled=true
 
 Then you can start an iTango session with:
 
@@ -387,14 +387,14 @@ it like this:
 
 .. code-block:: console
 
-    $ helm install --dependency-update test charts/sdp
+    $ helm install --dependency-update test charts/ska-sdp
 
-The ``--dependency-update`` flag downloads the ``ska-tango-base`` chart on which the
-``sdp`` chart depends.
+The ``--dependency-update`` flag downloads the ``ska-tango-base`` chart on
+which the ``ska-sdp`` chart depends.
 
 Developing SDP Workflows
 ------------------------
 
 Instructions on how to develop and test SDP workflows can be found in the
 `Science Pipeline Workflows
-<https://developer.skatelescope.org/projects/ska-sdp-science-pipelines/en/latest/index.html>`_ documentation.
+<https://developer.skao.int/projects/ska-sdp-science-pipelines/en/latest/index.html>`_ documentation.
