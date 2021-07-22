@@ -127,7 +127,7 @@ publish-release:
   extends: .publish
   script:
     - helm package charts/ska-sdp --dependency-update
-    - curl -u $CAR_HELM_USERNAME:$CAR_HELM_PASSWORD --upload-file ska-sdp-*.tgz $CAR_HELM_REPOSITORY_URL
+    - curl -u $CAR_HELM_USERNAME:$CAR_HELM_PASSWORD --upload-file ska-sdp-*.tgz $CAR_HELM_REPOSITORY_URL/
   only:
     variables:
        - $CI_COMMIT_MESSAGE =~ /^.+$/ # Confirm tag message exists
