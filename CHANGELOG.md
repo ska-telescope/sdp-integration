@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.0
+
+* Rename chart to ska-sdp.
+* Update components to use images from the central artefact repository:
+  - LMC 0.17.2
+  - Console 0.3.1
+  - Operator interface 0.2.1
+  - Processing controller 0.10.1
+  - Helm deployer 0.9.1
+
 ## 0.6.1
 
 * Update Tango base chart dependency to ska-tango-base 0.2.23.
