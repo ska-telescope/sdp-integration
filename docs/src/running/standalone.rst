@@ -108,7 +108,6 @@ This will allow you to use the ``ska-sdp`` command:
     /subarray/01
     /workflow/batch:batch_imaging:0.1.0
     /workflow/batch:batch_imaging:0.1.1
-    /workflow/batch:delivery:0.1.0
     ...
 
 Which shows that the configuration contains the state of the Tango devices and
@@ -132,8 +131,8 @@ For example
 
 .. code-block:: console
 
-    # ska-sdp create pb batch:test_dask:0.2.5
-    OK, pb_id = pb-sdpcli-20210525-00000
+    # ska-sdp create pb batch:test_dask:0.2.6
+    Processing block created with pb_id: pb-sdpcli-20210802-00000
 
 Note - the ska-sdp command can only create a PB with a batch workflow.
 A real-time PB must be linked to a Scheduling Block Instance (SBI), and
@@ -146,31 +145,34 @@ configuration:
 .. code-block:: console
 
     # ska-sdp list -v pb
-    Keys with /pb prefix:
-    /pb/pb-sdpcli-20210525-00000 = {
+    Keys with prefix /pb:
+    /pb/pb-sdpcli-20210802-00000 = {
       "dependencies": [],
-      "id": "pb-sdpcli-20210525-00000",
+      "id": "pb-sdpcli-20210802-00000",
       "parameters": {},
       "sbi_id": null,
       "workflow": {
         "id": "test_dask",
         "type": "batch",
-        "version": "0.2.2"
+        "version": "0.2.6"
       }
     }
-    /pb/pb-sdpcli-20210525-00000/owner = {
+    /pb/pb-sdpcli-20210802-00000/owner = {
       "command": [
         "test_dask.py",
-        "pb-sdpcli-20210525-00000"
+        "pb-sdpcli-20210802-00000"
       ],
-      "hostname": "proc-pb-sdpcli-20210525-00000-workflow-97p8g",
+      "hostname": "proc-pb-sdpcli-20210802-00000-workflow-mvdnk",
       "pid": 1
     }
-    /pb/pb-sdpcli-20210525-00000/state = {
+    /pb/pb-sdpcli-20210802-00000/state = {
+      "deployments": {
+        "proc-pb-sdpcli-20210802-00000-dask-1": "RUNNING",
+        "proc-pb-sdpcli-20210802-00000-dask-2": "RUNNING"
+      },
       "resources_available": true,
       "status": "RUNNING"
     }
-
 
 The processing block is detected by the processing controller which
 deploys the workflow. The workflow in turn deploys the execution engines
@@ -181,31 +183,42 @@ the Helm deployer which actually makes the deployments:
 .. code-block:: console
 
     # ska-sdp list -v deployment
-    Keys with /deploy prefix:
-    /deploy/proc-pb-sdpcli-20210525-00000-dask = {
+    Keys with prefix /deploy:
+    /deploy/proc-pb-sdpcli-20210802-00000-dask-1 = {
       "args": {
-        "chart": "dask/dask",
+        "chart": "dask",
         "values": {
-          "jupyter.enabled": "false",
-          "jupyter.rbac": "false",
-          "scheduler.serviceType": "ClusterIP",
+          "image": "artefact.skao.int/ska-sdp-wflow-test-dask:0.2.6",
           "worker.replicas": 2
         }
       },
-      "id": "proc-pb-sdpcli-20210525-00000-dask",
+      "id": "proc-pb-sdpcli-20210802-00000-dask-1",
       "type": "helm"
     }
-    /deploy/proc-pb-sdpcli-20210525-00000-workflow = {
+    /deploy/proc-pb-sdpcli-20210802-00000-dask-2 = {
+      "args": {
+        "chart": "dask",
+        "values": {
+          "image": "artefact.skao.int/ska-sdp-wflow-test-dask:0.2.6",
+          "worker.replicas": 2
+        }
+      },
+      "id": "proc-pb-sdpcli-20210802-00000-dask-2",
+      "type": "helm"
+    }
+    /deploy/proc-pb-sdpcli-20210802-00000-workflow = {
       "args": {
         "chart": "workflow",
         "values": {
-          "env.SDP_CONFIG_HOST": "sdp-etcd-client.default.svc.cluster.local",
-          "env.SDP_HELM_NAMESPACE": "sdp",
-          "pb_id": "pb-sdpcli-20210525-00000",
-          "wf_image": "nexus.engageska-portugal.pt/sdp-prototype/workflow-test-dask:0.2.2"
+          "env": {
+            "SDP_CONFIG_HOST": "sdp-etcd-client.default.svc.cluster.local",
+            "SDP_HELM_NAMESPACE": "sdp"
+          },
+          "pb_id": "pb-sdpcli-20210802-00000",
+          "wf_image": "artefact.skao.int/ska-sdp-wflow-test-dask:0.2.6"
         }
       },
-      "id": "proc-pb-sdpcli-20210525-00000-workflow",
+      "id": "proc-pb-sdpcli-20210802-00000-workflow",
       "type": "helm"
     }
 
@@ -216,11 +229,14 @@ follows (on the host):
 .. code-block:: console
 
     $ kubectl get pod -n sdp
-    NAME                                                            READY   STATUS    RESTARTS   AGE
-    proc-pb-sdpcli-20210525-00000-dask-scheduler-55c74999f6-tvrtx   1/1     Running   0          52s
-    proc-pb-sdpcli-20210525-00000-dask-worker-677545d9f9-j9ffv      1/1     Running   0          52s
-    proc-pb-sdpcli-20210525-00000-dask-worker-677545d9f9-jphzr      1/1     Running   0          52s
-    proc-pb-sdpcli-20210525-00000-workflow-97p8g                    1/1     Running   0          54s
+    NAME                                                              READY   STATUS    RESTARTS   AGE
+    proc-pb-sdpcli-20210802-00000-dask-1-scheduler-6d84584948-t5kzz   1/1     Running   0          30s
+    proc-pb-sdpcli-20210802-00000-dask-1-worker-5b568bb45b-7jcsr      1/1     Running   0          30s
+    proc-pb-sdpcli-20210802-00000-dask-1-worker-5b568bb45b-rfxvs      1/1     Running   0          30s
+    proc-pb-sdpcli-20210802-00000-dask-2-scheduler-5f6dfc6d56-r4rt5   1/1     Running   0          29s
+    proc-pb-sdpcli-20210802-00000-dask-2-worker-78cd65b78f-dqkp4      1/1     Running   0          29s
+    proc-pb-sdpcli-20210802-00000-dask-2-worker-78cd65b78f-jxbjz      1/1     Running   0          29s
+    proc-pb-sdpcli-20210802-00000-workflow-mvdnk                      1/1     Running   0          33s
 
 Cleaning up
 ^^^^^^^^^^^
@@ -230,11 +246,10 @@ console shell):
 
 .. code-block:: console
 
-    # ska-sdp delete pb pb-sdpcli-20210525-00000
-    /pb/pb-sdpcli-20210525-00000
-    /pb/pb-sdpcli-20210525-00000/owner
-    /pb/pb-sdpcli-20210525-00000/state
-    OK
+    # ska-sdp delete pb pb-sdpcli-20210802-00000
+    /pb/pb-sdpcli-20210802-00000
+    /pb/pb-sdpcli-20210802-00000/state
+    Deleted above keys with prefix /pb/pb-sdpcli-20210802-00000.
 
 If you re-run the commands from the last section you will notice that
 this correctly causes all changes to the cluster configuration to be
