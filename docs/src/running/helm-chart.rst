@@ -142,11 +142,11 @@ Example of workflow definitions in a values file:
     - type: realtime
       id: test_realtime
       version: 0.2.2
-      image: nexus.engageska-portugal.pt/sdp-prototype/workflow-test-batch:0.2.2
+      image: artefact.skao.int/ska-sdp-wflow-test-batch:0.2.2
     - type: batch
       id: test_realtime
       version: 0.2.2
-      image: nexus.engageska-portugal.pt/sdp-prototype/workflow-test-realtime:0.2.2
+      image: artefact.skao.int/ska-sdp-wflow-test-realtime:0.2.2
 
 
 Helm deployer
