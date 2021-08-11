@@ -92,7 +92,7 @@ lmc:
   component: sdp-lmc
   subsystem: execution-control
   image: artefact.skao.int/ska-sdp-lmc
-  version: 0.17.2
+  version: 0.18.0
   imagePullPolicy: IfNotPresent
   enabled: true
   allCommandsHaveArgument: false
