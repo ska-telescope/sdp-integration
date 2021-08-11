@@ -5,7 +5,7 @@ from datetime import date
 
 import tango
 from pytest_bdd import scenarios, given, when, then, parsers
-from common import wait_for_state, wait_for_predicate
+from common import wait_for_predicate
 
 DEVICE_NAME = "test_sdp/elt/subarray_1"
 
@@ -17,9 +17,9 @@ scenarios("features/subarray.feature")
 
 
 @given("I connect to an SDP subarray", target_fixture="subarray_device")
-def connect_to_subarray_device():
-    proxy = tango.DeviceProxy(DEVICE_NAME)
-    return proxy
+def connect_to_subarray():
+    """Connect to the subarray using a Tango DeviceProxy."""
+    return tango.DeviceProxy(DEVICE_NAME)
 
 
 @given(parsers.parse("the state is {state:S}"))
@@ -81,7 +81,7 @@ def call_command(subarray_device, command):
 
 
 @then(parsers.parse("the state should be {state:S}"))
-def check_state(subarray_device, state):
+def state_is(subarray_device, state):
     """
     Check the device state.
 
@@ -89,14 +89,25 @@ def check_state(subarray_device, state):
     :param final_state: expected state value
 
     """
-    wait_for_state(subarray_device, state)
+    assert subarray_device.State().name == state
 
 
 @then(parsers.parse("obsState should be {obs_state:S}"))
-@then(parsers.parse("obsState should become {obs_state:S}"))
-def check_obs_state(subarray_device, obs_state):
+def obs_state_is(subarray_device, obs_state):
     """
     Check the obsState.
+
+    :param subarray_device: SDP subarray device proxy
+    :param obs_state: the expected obsState
+
+    """
+    assert subarray_device.obsState.name == obs_state
+
+
+@then(parsers.parse("obsState should become {obs_state:S}"))
+def obs_state_becomes(subarray_device, obs_state):
+    """
+    Check the obsState becomes the expected value.
 
     :param subarray_device: SDP subarray device proxy
     :param obs_state: the expected obsState
@@ -247,19 +258,15 @@ def set_state_and_obs_state(device, state, obs_state):
     if device.State().name != state or device.obsState.name != obs_state:
         if device.State().name != "OFF":
             call_command(device, "Off")
-            wait_for_state(device, "OFF")
         if state == "ON":
             call_command(device, "On")
-            wait_for_state(device, "ON")
             if obs_state in ["IDLE", "READY", "SCANNING"]:
                 call_command(device, "AssignResources")
                 wait_for_obs_state(device, "IDLE")
             if obs_state in ["READY", "SCANNING"]:
                 call_command(device, "Configure")
-                wait_for_obs_state(device, "READY")
             if obs_state == "SCANNING":
                 call_command(device, "Scan")
-                wait_for_obs_state(device, "SCANNING")
 
     assert device.State().name == state
     assert device.obsState.name == obs_state

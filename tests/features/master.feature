@@ -1,10 +1,10 @@
-Feature: SDP Master Device
+Feature: SDP Master
 
     Scenario Outline: Command succeeds in allowed state
         Given I connect to the SDP master
-        And its state is <initial_state>
+        And the state is <initial_state>
         When I call <command>
-        Then its state should be <final_state>
+        Then the state should be <final_state>
 
         Examples:
         | command | initial_state | final_state |
