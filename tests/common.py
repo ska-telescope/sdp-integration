@@ -3,24 +3,27 @@
 import time
 import pytest
 
+TIMEOUT = 60.0
+INTERVAL = 0.5
 
-def wait_for_predicate(predicate, description, count=120, wait=0.5):
+
+def wait_for_predicate(predicate, description, timeout=TIMEOUT, interval=INTERVAL):
     """
     Wait for predicate to be true.
 
     :param predicate: callable to test
     :param description: description to use if test fails
-    :param count: number of times to test condition
-    :param wait: time to wait between attempts, in seconds
+    :param timeout: timeout in seconds
+    :param interval: interval between tests of the predicate in seconds
 
     """
-    if not predicate():
-        for _ in range(count):
-            time.sleep(wait)
-            if predicate():
-                break
-        else:
-            pytest.fail(f"{description} not achieved after {count * wait} seconds")
+    start = time.time()
+    while True:
+        if predicate():
+            break
+        if time.time() >= start + timeout:
+            pytest.fail(f"{description} not achieved after {timeout} seconds")
+        time.sleep(interval)
 
 
 def wait_for_state(device, state):

@@ -1,10 +1,7 @@
 import time
 
 import tango
-
-import pytest
 from pytest_bdd import scenarios, given, when, then, parsers
-from common import wait_for_state
 
 DEVICE_NAME = "test_sdp/elt/master"
 
@@ -16,13 +13,12 @@ scenarios("features/master.feature")
 
 
 @given("I connect to the SDP master", target_fixture="master_device")
-def connect_to_master_device():
-    proxy = tango.DeviceProxy(DEVICE_NAME)
-    return proxy
+def connect_to_master():
+    """Connect to the master using a Tango DeviceProxy."""
+    return tango.DeviceProxy(DEVICE_NAME)
 
 
-@given(parsers.parse("its state is {initial_state:S}"))
-@given("its state is <initial_state>")
+@given("the state is <initial_state>")
 def set_state(master_device, initial_state):
     """
     Set the device state.
@@ -35,8 +31,6 @@ def set_state(master_device, initial_state):
     if master_device.State().name != initial_state:
         # Call command to put device into the desired state
         master_device.command_inout(initial_state)
-        # Wait until state attribute has been updated
-        wait_for_state(master_device, initial_state)
 
 
 # ----------
@@ -44,7 +38,6 @@ def set_state(master_device, initial_state):
 # ----------
 
 
-@when(parsers.parse("I call {command:S}"))
 @when("I call <command>")
 def call_command(master_device, command):
     """
@@ -65,9 +58,8 @@ def call_command(master_device, command):
 # ----------
 
 
-@then(parsers.parse("its state should be {final_state:S}"))
-@then("its state should be <final_state>")
-def check_state(master_device, final_state):
+@then("the state should be <final_state>")
+def state_is(master_device, final_state):
     """
     Check the device state.
 
@@ -75,4 +67,4 @@ def check_state(master_device, final_state):
     :param final_state: expected state value
 
     """
-    wait_for_state(master_device, final_state)
+    assert master_device.State().name == final_state

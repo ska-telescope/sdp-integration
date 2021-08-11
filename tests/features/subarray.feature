@@ -1,4 +1,4 @@
-Feature: SDP subarray
+Feature: SDP Subarray
 
     Scenario: On command
         Given I connect to an SDP subarray
