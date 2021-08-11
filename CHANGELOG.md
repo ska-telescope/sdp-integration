@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.0
+
+* Update LMC to 0.18.0. This improves the behaviour of commands so attributes
+  take their transitional or final value before the command exits.
+
 ## 0.7.0
 
 * Rename chart to ska-sdp.
